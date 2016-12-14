@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-dark.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <title>Mininet by dfridovi</title>
+  </head>
+
+  <body>
+
+    <header>
+      <div class="container">
+        <h1>Mininet</h1>
+        <h2>A lightweight C++ neural network library.</h2>
+
+        <section id="downloads">
+          <a href="https://github.com/dfridovi/mininet/zipball/master" class="btn">Download as .zip</a>
+          <a href="https://github.com/dfridovi/mininet/tarball/master" class="btn">Download as .tar.gz</a>
+          <a href="https://github.com/dfridovi/mininet" class="btn btn-github"><span class="icon"></span>View on GitHub</a>
+        </section>
+      </div>
+    </header>
+
+    <div class="container">
+      <section id="main_content">
+        <h1>
+<a id="mininet" class="anchor" href="#mininet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>mininet</h1>
+
+<p><a href="https://travis-ci.org/dfridovi/exploration"><img src="https://travis-ci.org/dfridovi/exploration.svg?branch=master" alt="Build Status"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-BSD-blue.svg" alt="License"></a></p>
+
+<p>A lightweight C++ framework for deep learning. <strong>mininet</strong> is written by <a href="http://people.eecs.berkeley.edu/%7Edfk/">David Fridovich-Keil</a>, a second-year PhD student in the <a href="http://bair.berkeley.edu">Berkeley Artificial Intelligence Research (BAIR) Lab</a>, and Sara Fridovich-Keil, a junior electrical engineering student student at Princeton.</p>
+
+<h2>
+<a id="status" class="anchor" href="#status" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Status</h2>
+
+<p><strong>mininet</strong> is still under active development. We hope to have a first release soon though, so stay tuned!</p>
+
+<h2>
+<a id="structure" class="anchor" href="#structure" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Structure</h2>
+
+<p>All source code is located in <code>src/</code>; headers are in <code>include/</code>; unit tests are in <code>/test/</code>; and executables are in <code>exec/</code>. Compiled binaries will be placed in <code>bin/</code>.</p>
+
+<h2>
+<a id="dependencies" class="anchor" href="#dependencies" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Dependencies</h2>
+
+<p>I may miss a few here, but here is a list of dependencies:</p>
+
+<ul>
+<li>
+<a href="http://eigen.tuxfamily.org/dox/">Eigen</a> (header-only linear algebra library)</li>
+<li>Gflags (Google's command-line flag manager)</li>
+<li>Glog (Google's logging tool)</li>
+</ul>
+
+<p>All of these may be installed very easily. If you run into any trouble, though, we are more than happy to help you figure out what's going on. Just post an <a href="https://github.com/dfridovi/mininet/issues">issue</a> on this repository and we will reply as soon as possible.</p>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h2>
+
+<p>You'll need to begin by building the repository. From the top directory, type the following sequence of commands:</p>
+
+<pre><code>mkdir bin
+mkdir build
+cd build
+cmake ..
+make -j4
+</code></pre>
+
+<p>This should build all tests and executables. In order to run tests, you can run the following command:</p>
+
+<pre><code>./run_tests
+</code></pre>
+
+<p>from within the <code>build/</code> directory you just made. All the tests should pass, and none should take more than a second or so to run.</p>
+
+<p>Executables are automatically placed within the <code>bin/</code> directory that you created. To run them, just type <code>./(name-of-executable)</code>.</p>
+
+<p>To the extent that it makes sense, all parameters are accessible from the command line via Gflags. For help with command line options, simply run the following command:</p>
+
+<pre><code>./(name-of-executable) --help
+</code></pre>
+
+<h2>
+<a id="api-documentation" class="anchor" href="#api-documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>API documentation</h2>
+
+<p>We use Doxygen to auto-generate web-based <a href="https://dfridovi.github.io/mininet/documentation/html/">documentation</a>. Although we do not follow the Doxygen guidelines for writing comments, auto-generation still seems to do a fairly reasonable job.</p>
+      </section>
+    </div>
+
+    
+  </body>
+</html>
