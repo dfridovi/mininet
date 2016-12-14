@@ -38,7 +38,7 @@
 #include <gtest/gtest.h>
 
 int main(int argc, char** argv) {
-  std::string log_file = RADIATION_TEST_DATA_DIR + std::string("/out.log");
+  std::string log_file = MININET_TEST_DATA_DIR + std::string("/out.log");
   google::SetLogDestination(0, log_file.c_str());
   FLAGS_logtostderr = true;
   FLAGS_minloglevel = 1;

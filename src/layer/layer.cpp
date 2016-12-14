@@ -53,7 +53,7 @@ Layer::~Layer() {}
 
 // Get input/output sizes and weights.
 inline size_t Layer::InputSize() const { return weights_.cols() - 1; }
-inline size_t Layer::OutputSize() const { return weights_rows(); }
+inline size_t Layer::OutputSize() const { return weights_.rows(); }
 inline const MatrixXd& Layer::ImmutableWeights() const { return weights_; }
 
 } // namespace mininet
