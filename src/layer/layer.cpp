@@ -41,33 +41,19 @@
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef MININET_LAYER_LAYER_H
-#define MININET_LAYER_LAYER_H
-
-#include <util/types.h>
+#include <layer/layer.h>
 
 namespace mininet {
 
-class Layer {
-public:
-  explicit Layer(size_t input_size, size_t output_size);
-  virtual ~Layer();
+// Initialize weights randomly, and add an extra input dimension for the
+// input bias term.
+Layer::Layer(size_t input_size, size_t output_size)
+  : weights_(MatrixXd::Random(output_size, input_size + 1)) {}
+Layer::~Layer() {}
 
-  // Get input/output sizes and weights.
-  inline size_t InputSize() const;
-  inline size_t OutputSize() const;
-  inline const MatrixXd& ImmutableWeights() const;
-
-  // Activation and gradient. Implement these in derived classes.
-  virtual void Activation(const VectorXd& input, VectorXd& output) const = 0;
-  virtual void Gradient(const VectorXd& upstream, VectorXd* gradient) const = 0;
-
-protected:
-  // Weights from input (with bias) to output.
-  MatrixXd weights_;
-
-}; // class Layer
+// Get input/output sizes and weights.
+inline size_t Layer::InputSize() const { return weights_.cols() - 1; }
+inline size_t Layer::OutputSize() const { return weights_rows(); }
+inline const MatrixXd& Layer::ImmutableWeights() const { return weights_; }
 
 } // namespace mininet
-
-#endif
