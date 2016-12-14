@@ -32,9 +32,6 @@ install:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 20; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo update-alternatives --config gcc; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo update-alternatives --config g++; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install freeglut3 freeglut3-dev; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install binutils-gold; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo apt-get install libxmu-dev libxi-dev; fi
 
 before_script:
   # Get Eigen. The apt-get version on 12.04 is too old; we need at least 3.1.0.
@@ -47,24 +44,14 @@ before_script:
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo make install; fi
   - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cd ../../..; fi
 
-  # Get Ceres-solver. It's not available yet as an apt package.
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then git clone https://ceres-solver.googlesource.com/ceres-solver; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cd ceres-solver; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then mkdir build && cd build; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cmake -DCMAKE_BUILD_TYPE=Release -DOPENMP=OFF -DSUITESPARSE=OFF -DCXSPARSE=OFF -DEIGENSPARSE=OFF -DLAPACK=OFF ..; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then make -j4; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then sudo make install; fi
-  - if [ "$TRAVIS_OS_NAME" == "linux" ]; then cd ../..; fi
-
   # Configure and make Exploration.
-  - cd radiation/cpp
   - mkdir bin
   - mkdir build
   - cd build
   - cmake ..
 
 script:
-  - make -j1
+  - make -j4
   - ./run_tests
 
 #after_success:
