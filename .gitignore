@@ -1,6 +1,7 @@
 # C++ build and binaries.
 build/
 bin/
+data/
 
 # Figures.
 */figures/
