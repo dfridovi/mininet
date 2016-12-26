@@ -37,39 +37,43 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Defines the Layer base class.
+// Defines the ReLU layer type.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef MININET_LAYER_LAYER_H
-#define MININET_LAYER_LAYER_H
+#include <layer/relu.h>
 
-#include <util/types.h>
+#include <glog/logging.h>
+#include <math.h>
 
 namespace mininet {
 
-class Layer {
-public:
-  explicit Layer(size_t input_size, size_t output_size);
-  virtual ~Layer();
+// Activation and gradient. Implement these in derived classes.
+void ReLU::Activation(const VectorXd& input, VectorXd& output) const {
+  // Check that input and output are the correct sizes.
+  CHECK(input.rows() == weights_.cols() - 1);
+  CHECK(output.rows() == weights_.rows());
 
-  // Get input/output sizes and weights.
-  inline size_t InputSize() const;
-  inline size_t OutputSize() const;
-  inline const MatrixXd& ImmutableWeights() const;
+  // Compute linear transformation with bias.
+  output = weights_.leftCols(input.rows()) * input + weights_.rightCols(1);
 
-  // Activation and gradient. Implement these in derived classes.
-  virtual void Activation(const VectorXd& input, VectorXd& output) const = 0;
-  virtual void Gradient(const VectorXd& upsteam_deltas,
-                        const VectorXd& values,
-                        MatrixXd& gradient, VectorXd& deltas) const = 0;
+  // Apply hinge loss (ReLU) nonlinearity.
+  for (size_t ii = 0; ii < output.rows(); ii++)
+    output(ii) = max(output(ii), 0.0);
+}
 
-protected:
-  // Weights from input (with bias) to output.
-  MatrixXd weights_;
+void ReLU::Gradient(const VectorXd& upstream_deltas,
+                    const VectorXd& values,
+                    MatrixXd& gradient, VectorXd& deltas) const {
+  // Check that all dimensions line up.
+  CHECK(upstream_deltas.rows() == weights_.rows());
+  CHECK(values.rows() == weights_.cols() - 1);
+  CHECK(deltas.rows() == weights_.cols());
+  CHECK(gradient.rows() == weights_.rows());
+  CHECK(gradient.cols() == weights_.cols());
 
-}; // class Layer
+  // Backpropagation.
+  // TODO!
+}
 
 } // namespace mininet
-
-#endif
