@@ -52,8 +52,9 @@ namespace mininet {
 class ReLU : public Layer {
 public:
   // Activation and gradient. Implement these in derived classes.
-  void Activation(const VectorXd& input, VectorXd& output) const;
-  void Gradient(const VectorXd& upstream, VectorXd* gradient) const;
+  void Forward(const VectorXd& input, VectorXd& output) const;
+  void Backward(const VectorXd& upstream_deltas,
+                const VectorXd& values, VectorXd& deltas) const;
 }; // class ReLU
 
 } // namespace mininet

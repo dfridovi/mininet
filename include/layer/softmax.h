@@ -37,37 +37,25 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Defines the Layer base class.
+// Defines the softmax layer type.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef MININET_LAYER_LAYER_H
-#define MININET_LAYER_LAYER_H
+#ifndef MININET_LAYER_SOFTMAX_H
+#define MININET_LAYER_SOFTMAX_H
 
+#include <layer/layer.h>
 #include <util/types.h>
 
 namespace mininet {
 
-class Layer {
+class Softmax : public Layer {
 public:
-  explicit Layer(size_t input_size, size_t output_size);
-  virtual ~Layer();
-
-  // Get input/output sizes and weights.
-  inline size_t InputSize() const;
-  inline size_t OutputSize() const;
-  inline const MatrixXd& ImmutableWeights() const;
-
   // Activation and gradient. Implement these in derived classes.
-  virtual void Forward(const VectorXd& input, VectorXd& output) const = 0;
-  virtual void Backward(const VectorXd& upsteam_deltas,
-                        const VectorXd& values, VectorXd& deltas) const = 0;
-
-protected:
-  // Weights from input (with bias) to output.
-  MatrixXd weights_;
-
-}; // class Layer
+  void Activation(const VectorXd& input, VectorXd& output) const;
+  void Gradient(const VectorXd& upstream_deltas,
+                const VectorXd& values, VectorXd& deltas) const;
+}; // class Softmax
 
 } // namespace mininet
 

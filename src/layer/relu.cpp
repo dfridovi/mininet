@@ -49,7 +49,7 @@
 namespace mininet {
 
 // Activation and gradient. Implement these in derived classes.
-void ReLU::Activation(const VectorXd& input, VectorXd& output) const {
+void ReLU::Forward(const VectorXd& input, VectorXd& output) const {
   // Check that input and output are the correct sizes.
   CHECK(input.rows() == weights_.cols() - 1);
   CHECK(output.rows() == weights_.rows());
@@ -62,18 +62,26 @@ void ReLU::Activation(const VectorXd& input, VectorXd& output) const {
     output(ii) = max(output(ii), 0.0);
 }
 
-void ReLU::Gradient(const VectorXd& upstream_deltas,
-                    const VectorXd& values,
-                    MatrixXd& gradient, VectorXd& deltas) const {
+void ReLU::Backward(const VectorXd& upstream_deltas,
+                    const VectorXd& values, VectorXd& deltas) const {
   // Check that all dimensions line up.
   CHECK(upstream_deltas.rows() == weights_.rows());
   CHECK(values.rows() == weights_.cols() - 1);
   CHECK(deltas.rows() == weights_.cols());
-  CHECK(gradient.rows() == weights_.rows());
-  CHECK(gradient.cols() == weights_.cols());
 
   // Backpropagation.
-  // TODO!
+  for (size_t ii = 0; ii < deltas.rows(); ii++) {
+    deltas(ii) = 0.0;
+
+    // ReLU derivative is either 0 or 1, depending on the ii'th element
+    // of 'values'.
+    if (values(ii) < 1e-16)
+      continue;
+
+    for (size_t jj = 0; jj < upsteam_deltas.rows(); jj++) {
+      deltas(ii) += upsteam_deltas(jj) * weights_(ii, jj);
+    }
+  }
 }
 
 } // namespace mininet
