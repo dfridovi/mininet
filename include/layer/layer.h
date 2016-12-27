@@ -58,10 +58,10 @@ public:
   inline size_t OutputSize() const;
   inline const MatrixXd& ImmutableWeights() const;
 
-  // Activation and gradient. Implement these in derived classes.
+  // Layers only need to propagate forward. Specific types of layers will also
+  // have a 'Backward' function to compute a derivative of loss with respect to
+  // sum node value ('delta').
   virtual void Forward(const VectorXd& input, VectorXd& output) const = 0;
-  virtual void Backward(const VectorXd& upsteam_deltas,
-                        const VectorXd& values, VectorXd& deltas) const = 0;
 
 protected:
   // Weights from input (with bias) to output.

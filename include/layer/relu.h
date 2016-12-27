@@ -44,12 +44,12 @@
 #ifndef MININET_LAYER_RELU_H
 #define MININET_LAYER_RELU_H
 
-#include <layer/layer.h>
+#include <layer/hidden_layer.h>
 #include <util/types.h>
 
 namespace mininet {
 
-class ReLU : public Layer {
+class ReLU : public HiddenLayer {
 public:
   // Activation and gradient. Implement these in derived classes.
   void Forward(const VectorXd& input, VectorXd& output) const;

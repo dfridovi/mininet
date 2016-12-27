@@ -37,25 +37,27 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Defines the softmax layer type.
+// Defines the hidden layer base class.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef MININET_LAYER_SOFTMAX_H
-#define MININET_LAYER_SOFTMAX_H
+#ifndef MININET_LAYER_HIDDEN_LAYER_H
+#define MININET_LAYER_HIDDEN_LAYER_H
 
-#include <layer/output_layer.h>
+#include <layer/layer.h>
 #include <util/types.h>
 
 namespace mininet {
 
-class Softmax : public OutputLayer {
+class HiddenLayer : public Layer {
 public:
-  // Activation and gradient. Implement these in derived classes.
-  void Forward(const VectorXd& input, VectorXd& output) const;
-  void Backward(const LossFunctor& loss, const VectorXd& ground_truth,
-                const VectorXd& values, VectorXd& deltas) const;
-}; // class Softmax
+  // 'Forward' propagation is inherited from Layer. 'Backward' computes the
+  // so-called 'deltas', i.e. the derivative of loss with respect to the sum
+  // at each node. Note that 'values' holds the output of the non-linearity.
+  virtual void Backward(const VectorXd& upsteam_deltas,
+                        const VectorXd& values, VectorXd& deltas) const = 0;
+
+}; // class HiddenLayer
 
 } // namespace mininet
 

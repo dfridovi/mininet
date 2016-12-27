@@ -31,32 +31,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * Please contact the author(s) of this library if you have any questions.
- * Author: David Fridovich-Keil   ( dfk@eecs.berkeley.edu )
- *         Sara Fridovich-Keil    ( saraf@princeton.edu )
+ * Authors: David Fridovich-Keil   ( dfk@eecs.berkeley.edu )
+ *          Sara Fridovich-Keil    ( saraf@princeton.edu )
  */
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Defines the softmax layer type.
+// Defines the loss functor base class.
 //
-///////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////
 
-#ifndef MININET_LAYER_SOFTMAX_H
-#define MININET_LAYER_SOFTMAX_H
+#ifndef MININET_LOSS_LOSS_FUNCTOR_H
+#define MININET_LOSS_LOSS_FUNCTOR_H
 
-#include <layer/output_layer.h>
 #include <util/types.h>
 
 namespace mininet {
 
-class Softmax : public OutputLayer {
-public:
-  // Activation and gradient. Implement these in derived classes.
-  void Forward(const VectorXd& input, VectorXd& output) const;
-  void Backward(const LossFunctor& loss, const VectorXd& ground_truth,
-                const VectorXd& values, VectorXd& deltas) const;
-}; // class Softmax
+struct LossFunctor {
+  // All loss functors must evaluate the loss and derivative with respect to
+  // the input 'values' (which are the output of some 'OutputLayer').
+  virtual bool operator()(const VectorXd& ground_truth, const VectorXd& values,
+                          double& loss, VectorXd& gradient) const = 0;
+} //\struct LossFunctor
 
-} // namespace mininet
+}  //\namespace mininet
 
 #endif
