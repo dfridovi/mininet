@@ -47,15 +47,69 @@
 #include <layer/output_layer.h>
 #include <util/types.h>
 
+#include <math.h>
+#include <limits>
+
 namespace mininet {
 
-class Softmax : public OutputLayer {
-public:
-  // Activation and gradient. Implement these in derived classes.
-  void Forward(const VectorXd& input, VectorXd& output) const;
-  void Backward(const LossFunctor& loss, const VectorXd& ground_truth,
-                const VectorXd& values, VectorXd& deltas) const;
-}; // class Softmax
+// Activation and gradient. Implement these in derived classes.
+void Softmax::Forward(const VectorXd& input, VectorXd& output) const {
+  // Check that input and output are the correct sizes.
+  CHECK(input.rows() == weights_.cols() - 1);
+  CHECK(output.rows() == weights_.rows());
+
+  // Compute linear transformation with bias.
+  output = weights_.leftCols(input.rows()) * input + weights_.rightCols(1);
+
+  // Compute non-linearity.
+  double sum = 0.0;
+  for (size_t ii = 0; ii < input.rows(); ii++) {
+    output(ii) = exp(output(ii));
+    sum += output(ii);
+  }
+
+  // Catch small sum.
+  if (abs(sum) < 1e-16) {
+    VLOG(1) << "Sum was too small in softmax layer. Did not normalize.";
+  } else {
+    output /= sum;
+  }
+}
+
+void Softmax::Backward(const LossFunctor& loss, const VectorXd& ground_truth,
+                       const VectorXd& values, VectorXd& deltas) const {
+  // Check that all dimensions line up.
+  CHECK(values.rows() == weights_.cols() - 1);
+  CHECK(deltas.rows() == weights_.cols());
+
+  // Compute loss value and gradient with respect to 'values'.
+  double loss_value = std::numeric_limits<double>::infinity();
+  VectorXd loss_gradient(values.rows());
+  CHECK(loss(ground_truth, values, loss_value, loss_gradient));
+
+  // Compute the Jacobian transpose of softmax output with respect to
+  // softmax input.
+  MatrixXd jacobian(values.rows(), values.rows());
+  for (size_t ii = 0; ii < values.rows(); ii++) {
+    jacobian(ii, ii) = values(ii) * (1.0 - values(ii));
+
+    for (size_t jj = ii + 1; jj < values.rows(); jj++) {
+      jacobian(ii, jj) = -values(ii) * values(jj);
+      jacobian(jj, ii) = -values(ii) * values(jj);
+    }
+  }
+
+  // Use the chain rule to compute 'deltas'.
+  for (size_t ii = 0; ii < deltas.rows(); ii++) {
+    deltas(ii) = 0.0;
+
+    for (size_t jj = 0; jj < loss_gradient.rows(); jj++) {
+      const double derivative = jacobian.row(jj) * loss_gradient;
+      deltas(ii) += weights_(ii, jj) * derivative;
+    }
+
+  }
+}
 
 } // namespace mininet
 
