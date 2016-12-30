@@ -73,10 +73,12 @@ void Softmax::Forward(const VectorXd& input, VectorXd& output) const {
 }
 
 void Softmax::Backward(const LossFunctor& loss, const VectorXd& ground_truth,
-                       const VectorXd& values, VectorXd& deltas) const {
+                       const VectorXd& values, VectorXd& top_gradient,
+                       VectorXd& backward_deltas) const {
   // Check that all dimensions line up.
   CHECK(values.rows() == weights_.rows());
   CHECK(deltas.rows() == weights_.cols() - 1);
+  CHECK(top_gradient.rows() == values.rows());
 
   // Compute loss value and gradient with respect to 'values'.
   double loss_value = std::numeric_limits<double>::infinity();
@@ -87,15 +89,32 @@ void Softmax::Backward(const LossFunctor& loss, const VectorXd& ground_truth,
   for (size_t ii = 0; ii < deltas.rows(); ii++) {
     deltas(ii) = 0.0;
 
+    // Compute top gradient as an intermediary.
     for (size_t jj = 0; jj < values.rows(); jj++) {
-      for (size_t kk = 0; kk < values.rows(); kk++) {
-        const double derivative = loss_gradient(kk) * weights_(ii, jj);
+      top_gradient(jj) = 0.0;
 
+      for (size_t kk = 0; kk < values.rows(); kk++) {
         if (jj == kk)
-          deltas(ii) += derivative * values(kk) * (1.0 - values(kk));
+          top_gradient(jj) +=
+            loss_gradient(kk) * values(kk) * (1.0 - values(kk));
         else
-          deltas(ii) -= derivative * values(kk) * values(jj);
+          top_gradient(jj) -= loss_gradient(kk) * values(kk) * values(jj);
       }
+
+      deltas(ii) += weights_(ii, jj) * top_gradient(jj);
+    }
+  }
+}
+
+// Update weights by gradient descent.
+void Softmax::UpdateWeights(const VectorXd& inputs, const VectorXd& top_gradient,
+                            double step_size) = 0 {
+  CHECK(input.rows() == weights_.cols() - 1);
+  CHECK(deltas.rows() == weights_.rows());
+
+  for (size_t ii = 0; ii < weights_.rows(); ii++) {
+    for (size_t jj = 0; jj < weights_.cols(); jj++) {
+      weights_(ii, jj) -= step_size * inputs(ii) * top_gradient(jj);
     }
   }
 }

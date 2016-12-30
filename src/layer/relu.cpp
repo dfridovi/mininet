@@ -84,4 +84,20 @@ void ReLU::Backward(const VectorXd& upstream_deltas,
   }
 }
 
+// Update weights by gradient descent.
+void ReLU::UpdateWeights(const VectorXd& inputs, const VectorXd& deltas,
+                         double step_size) = 0 {
+  CHECK(input.rows() == weights_.cols() - 1);
+  CHECK(deltas.rows() == weights_.rows());
+
+  for (size_t ii = 0; ii < weights_.rows(); ii++) {
+    for (size_t jj = 0; jj < weights_.cols(); jj++) {
+      if (deltas(jj) < 1e-16)
+        continue;
+
+      weights_(ii, jj) -= step_size * inputs(ii) * deltas(jj);
+    }
+  }
+}
+
 } // namespace mininet

@@ -43,7 +43,15 @@
 
 #include <layer/layer.h>
 
+#include <glog/logging.h>
+
 namespace mininet {
+
+// Factory method.
+Layer::Ptr Layer::Create(size_t input_size, size_t output_size) {
+  Layer::Ptr ptr(new Layer(input_size, output_size));
+  return ptr;
+}
 
 // Initialize weights randomly, and add an extra input dimension for the
 // input bias term.

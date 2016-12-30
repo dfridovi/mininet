@@ -31,58 +31,32 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * Please contact the author(s) of this library if you have any questions.
- * Author: David Fridovich-Keil   ( dfk@eecs.berkeley.edu )
- *         Sara Fridovich-Keil    ( saraf@princeton.edu )
+ * Authors: David Fridovich-Keil   ( dfk@eecs.berkeley.edu )
+ *          Sara Fridovich-Keil    ( saraf@princeton.edu )
  */
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Defines the Layer base class.
+// Defines the layer parameters base struct.
 //
-///////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////
 
-#ifndef MININET_LAYER_LAYER_H
-#define MININET_LAYER_LAYER_H
+#ifndef MININET_LAYER_LAYER_PARAMETERS_H
+#define MININET_LAYER_LAYER_PARAMETERS_H
 
 #include <util/types.h>
 
-#include <memory>
-
 namespace mininet {
 
-class Layer {
-public:
-  typedef std::shared_ptr<Layer> Ptr;
-  typedef std::shared_ptr<const Layer> ConstPtr;
+struct LayerParameters {
+  // Layer type.
+  LayerType type_ = RELU;
 
-  virtual ~Layer();
+  // Input/output size.
+  size_t input_size_ = 10;
+  size_t output_size_ = 10;
+}; //\struct LayerParameters
 
-  // Factory method.
-  static Ptr Create(size_t input_size, size_t output_size);
-
-  // Get input/output sizes and weights.
-  inline size_t InputSize() const;
-  inline size_t OutputSize() const;
-  inline const MatrixXd& ImmutableWeights() const;
-
-  // Update weights by gradient descent. Derived classes must implement this.
-  void UpdateWeights(const VectorXd& inputs, const VectorXd& deltas,
-                     double step_size) = 0;
-
-  // Layers need to propagate forward. Specific types of layers will also
-  // have a 'Backward' function to compute a derivative of loss with respect to
-  // sum node value ('delta').
-  virtual void Forward(const VectorXd& input, VectorXd& output) const = 0;
-
-protected:
-  // Protected constructor. Use the factory method instead.
-  explicit Layer(size_t input_size, size_t output_size);
-
-  // Weights from input (with bias) to output.
-  MatrixXd weights_;
-
-}; // class Layer
-
-} // namespace mininet
+}  //\namespace mininet
 
 #endif

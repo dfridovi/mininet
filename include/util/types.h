@@ -48,6 +48,10 @@
 
 namespace mininet {
 
+// ----------------------- Internal typedefs -------------------- //
+
+enum LayerType {RELU, SOFTMAX};
+
 // -------------------- Third-party typedefs -------------------- //
 
 // Eigen dynamic-sized matrix and vector types.
