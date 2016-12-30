@@ -59,15 +59,15 @@ void ReLU::Forward(const VectorXd& input, VectorXd& output) const {
 
   // Apply hinge loss (ReLU) nonlinearity.
   for (size_t ii = 0; ii < output.rows(); ii++)
-    output(ii) = max(output(ii), 0.0);
+    output(ii) = std::max(output(ii), 0.0);
 }
 
 void ReLU::Backward(const VectorXd& upstream_deltas,
                     const VectorXd& values, VectorXd& deltas) const {
   // Check that all dimensions line up.
   CHECK(upstream_deltas.rows() == weights_.rows());
-  CHECK(values.rows() == weights_.cols() - 1);
-  CHECK(deltas.rows() == weights_.cols());
+  CHECK(values.rows() == weights_.rows());
+  CHECK(deltas.rows() == weights_.cols() - 1);
 
   // Backpropagation.
   for (size_t ii = 0; ii < deltas.rows(); ii++) {
@@ -78,8 +78,8 @@ void ReLU::Backward(const VectorXd& upstream_deltas,
     if (values(ii) < 1e-16)
       continue;
 
-    for (size_t jj = 0; jj < upsteam_deltas.rows(); jj++) {
-      deltas(ii) += upsteam_deltas(jj) * weights_(ii, jj);
+    for (size_t jj = 0; jj < upstream_deltas.rows(); jj++) {
+      deltas(ii) += upstream_deltas(jj) * weights_(ii, jj);
     }
   }
 }

@@ -53,7 +53,7 @@ struct LossFunctor {
   // the input 'values' (which are the output of some 'OutputLayer').
   virtual bool operator()(const VectorXd& ground_truth, const VectorXd& values,
                           double& loss, VectorXd& gradient) const = 0;
-} //\struct LossFunctor
+}; //\struct LossFunctor
 
 }  //\namespace mininet
 

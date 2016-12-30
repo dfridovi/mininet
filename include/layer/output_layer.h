@@ -45,6 +45,7 @@
 #define MININET_LAYER_OUTPUT_LAYER_H
 
 #include <layer/layer.h>
+#include <loss/loss_functor.h>
 #include <util/types.h>
 
 namespace mininet {
