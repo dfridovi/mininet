@@ -65,9 +65,9 @@ public:
   inline size_t OutputSize() const;
   inline const MatrixXd& ImmutableWeights() const;
 
-  // Update weights by gradient descent. Derived classes must implement this.
+  // Update weights by gradient descent.
   void UpdateWeights(const VectorXd& inputs, const VectorXd& deltas,
-                     double step_size) = 0;
+                     double step_size);
 
   // Layers need to propagate forward. Specific types of layers will also
   // have a 'Backward' function to compute a derivative of loss with respect to

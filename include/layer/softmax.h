@@ -54,7 +54,8 @@ public:
   // Activation and gradient. Implement these in derived classes.
   void Forward(const VectorXd& input, VectorXd& output) const;
   void Backward(const LossFunctor& loss, const VectorXd& ground_truth,
-                const VectorXd& values, VectorXd& deltas) const;
+                const VectorXd& output, VectorXd& gammas,
+                VectorXd& deltas) const;
 }; // class Softmax
 
 } // namespace mininet

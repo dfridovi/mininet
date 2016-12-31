@@ -64,4 +64,17 @@ inline size_t Layer::InputSize() const { return weights_.cols() - 1; }
 inline size_t Layer::OutputSize() const { return weights_.rows(); }
 inline const MatrixXd& Layer::ImmutableWeights() const { return weights_; }
 
+// Update weights by gradient descent.
+void Layer::UpdateWeights(const VectorXd& inputs, const VectorXd& deltas,
+                          double step_size) = 0 {
+  CHECK(input.rows() == weights_.cols() - 1);
+  CHECK(deltas.rows() == weights_.rows());
+
+  for (size_t jj = 0; jj < weights_.rows(); jj++) {
+    for (size_t ii = 0; ii < weights_.cols() - 1; ii++) {
+      weights_(jj, ii) -= step_size * inputs(ii) * deltas(jj);
+    }
+  }
+}
+
 } // namespace mininet

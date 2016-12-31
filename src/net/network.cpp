@@ -100,41 +100,38 @@ void Network::operator()(const VectorXd& input, VectorXd& output) const {
 double Network::UpdateWeights(const VectorXd& input, const VectorXd& ground_truth,
                               double step_size) {
   // Foward and backward passes.
-  std::vector<VectorXd> layer_outputs;
-  Forward(input, layer_outputs);
+  std::vector<VectorXd> layer_inputs;
+  Forward(input, layer_inputs);
 
   std::vector<VectorXd> deltas;
-  Backward(ground_truth, layer_outputs, deltas);
+  Backward(ground_truth, layer_inputs, deltas);
 
-  // Update each weight.
+  // Update all weights.
   for (size_t ii = 0; ii < layers_.size(); ii++)
-    layers_[ii]->UpdateWeights(layer_outputs[ii], deltas[ii], step_size);
+    layers_[ii]->UpdateWeights(layer_inputs[ii], deltas[ii], step_size);
 }
 
 // Forward pass: compute the output of each layer.
 void Network::Forward(const VectorXd& input,
-                      std::vector<VectorXd>& layer_outputs) const {
+                      std::vector<VectorXd>& layer_inputs) const {
   CHECK(input.rows() == layers_.front().InputSize());
-  layer_outputs.clear();
+  layer_inputs.clear();
 
   // Pass through the network.
+  layer_inputs.push_back(input);
   for (size_t ii = 0; ii < layers_.size(); ii++) {
     Layer::ConstPtr layer = layers_[ii];
     VectorXd output(layer->OutputSize());
 
-    if (ii == 0)
-      layer->Forward(input, output);
-    else
-      layer->Forward(layer_outputs[ii - 1], output);
-
-    layer_outputs.push_back(output);
+    layer->Forward(layer_inputs[ii], output);
+    layer_inputs.push_back(output);
   }
 }
 
 // Backward pass: compute the 'deltas', i.e. the derivatives of loss by each
 // successive layer's outputs. Returns loss.
 double Network::Backward(const VectorXd& ground_truth,
-                         const std::vector<VectorXd>& layer_outputs,
+                         const std::vector<VectorXd>& layer_inputs,
                          std::vector<VectorXd>& deltas) const {
 
 }

@@ -53,10 +53,11 @@ namespace mininet {
 class OutputLayer : public Layer {
 public:
   // 'Forward' propagation is inherited from Layer. 'Backward' computes the
-  // so-called 'deltas', i.e. the derivative of loss with respect to the sum
-  // at each node. Note that 'values' holds the output of the non-linearity.
+  // so-called 'deltas' and 'gammas', i.e. the derivative of loss with respect
+  // to the pre-nonlinearity values and layer inputs, respectively. Note that
+  // 'output' holds the output of the non-linearity.
   virtual void Backward(const LossFunctor& loss, const VectorXd& ground_truth,
-                        const VectorXd& values, VectorXd& loss_gradient,
+                        const VectorXd& output, VectorXd& gammas,
                         VectorXd& deltas) const = 0;
 
 }; // class OutputLayer

@@ -67,14 +67,14 @@ public:
                        double step_size);
 
 private:
-  // Forward pass: compute the output of each layer.
+  // Forward pass: compute the inputs of each layer (outputs of previous).
   void Forward(const VectorXd& input,
-               std::vector<VectorXd>& layer_outputs) const;
+               std::vector<VectorXd>& layer_inputs) const;
 
   // Backward pass: compute the 'deltas', i.e. the derivatives of loss by each
   // successive layer's outputs. Returns loss.
   double Backward(const VectorXd& ground_truth,
-                  const std::vector<VectorXd>& layer_outputs,
+                  const std::vector<VectorXd>& layer_inputs,
                   std::vector<VectorXd>& deltas) const;
 
   // Layers.

@@ -62,40 +62,29 @@ void ReLU::Forward(const VectorXd& input, VectorXd& output) const {
     output(ii) = std::max(output(ii), 0.0);
 }
 
-void ReLU::Backward(const VectorXd& upstream_deltas,
-                    const VectorXd& values, VectorXd& deltas) const {
+void ReLU::Backward(const VectorXd& output, const VectorXd& upstream_gammas,
+                    VectorXd& gammas, VectorXd& deltas) const {
   // Check that all dimensions line up.
-  CHECK(upstream_deltas.rows() == weights_.rows());
-  CHECK(values.rows() == weights_.rows());
-  CHECK(deltas.rows() == weights_.cols() - 1);
-
-  // Backpropagation.
-  for (size_t ii = 0; ii < deltas.rows(); ii++) {
-    deltas(ii) = 0.0;
-
-    // ReLU derivative is either 0 or 1, depending on the ii'th element
-    // of 'values'.
-    if (values(ii) < 1e-16)
-      continue;
-
-    for (size_t jj = 0; jj < upstream_deltas.rows(); jj++) {
-      deltas(ii) += upstream_deltas(jj) * weights_(ii, jj);
-    }
-  }
-}
-
-// Update weights by gradient descent.
-void ReLU::UpdateWeights(const VectorXd& inputs, const VectorXd& deltas,
-                         double step_size) = 0 {
-  CHECK(input.rows() == weights_.cols() - 1);
+  CHECK(upstream_gammas.rows() == weights_.rows());
+  CHECK(output.rows() == weights_.rows());
   CHECK(deltas.rows() == weights_.rows());
+  CHECK(gammas.rows() == weights_.cols() - 1);
 
-  for (size_t ii = 0; ii < weights_.rows(); ii++) {
-    for (size_t jj = 0; jj < weights_.cols(); jj++) {
-      if (deltas(jj) < 1e-16)
-        continue;
+  // Compute the 'deltas' from the 'upstream gammas' (derivative of ReLU is
+  // 0.0 at 0 and 1.0 otherwise).
+  for (size_t ii = 0; ii < deltas.rows(); ii++) {
+    if (upstream_gammas(ii) < 1e-16)
+      deltas(ii) = 0.0;
+    else
+      deltas(ii) = 1.0;
+  }
 
-      weights_(ii, jj) -= step_size * inputs(ii) * deltas(jj);
+  // Compute the associated 'gammas'.
+  for (size_t ii = 0; ii < gammas.rows(); ii++) {
+    gammas(ii) = 0.0;
+
+    for (size_t jj = 0; jj < deltas.rows(); jj++) {
+      gammas(ii) += deltas(jj) * weights_(jj, ii);
     }
   }
 }

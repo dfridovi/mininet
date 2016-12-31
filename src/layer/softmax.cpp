@@ -73,48 +73,36 @@ void Softmax::Forward(const VectorXd& input, VectorXd& output) const {
 }
 
 void Softmax::Backward(const LossFunctor& loss, const VectorXd& ground_truth,
-                       const VectorXd& values, VectorXd& top_gradient,
-                       VectorXd& backward_deltas) const {
+                       const VectorXd& output, VectorXd& gammas,
+                       VectorXd& deltas) const {
   // Check that all dimensions line up.
-  CHECK(values.rows() == weights_.rows());
-  CHECK(deltas.rows() == weights_.cols() - 1);
-  CHECK(top_gradient.rows() == values.rows());
+  CHECK(output.rows() == weights_.rows());
+  CHECK(gammas.rows() == weights_.cols() - 1);
+  CHECK(deltas.rows() == weights_.rows());
 
-  // Compute loss value and gradient with respect to 'values'.
+  // Compute loss value and gradient with respect to 'output'.
   double loss_value = std::numeric_limits<double>::infinity();
-  VectorXd loss_gradient(values.rows());
-  CHECK(loss(ground_truth, values, loss_value, loss_gradient));
+  VectorXd loss_gradient(output.rows());
+  CHECK(loss(ground_truth, output, loss_value, loss_gradient));
 
   // Use the chain rule to compute 'deltas'.
   for (size_t ii = 0; ii < deltas.rows(); ii++) {
     deltas(ii) = 0.0;
 
-    // Compute top gradient as an intermediary.
-    for (size_t jj = 0; jj < values.rows(); jj++) {
-      top_gradient(jj) = 0.0;
-
-      for (size_t kk = 0; kk < values.rows(); kk++) {
-        if (jj == kk)
-          top_gradient(jj) +=
-            loss_gradient(kk) * values(kk) * (1.0 - values(kk));
-        else
-          top_gradient(jj) -= loss_gradient(kk) * values(kk) * values(jj);
-      }
-
-      deltas(ii) += weights_(ii, jj) * top_gradient(jj);
+    for (size_t jj = 0; jj < loss_gradient.rows(); jj++) {
+      if (ii == jj)
+        deltas(ii) += loss_gradient(jj) * output(ii) * (1.0 - output(ii));
+      else
+        deltas(ii) -= loss_gradient(jj) * output(ii) * output(jj);
     }
   }
-}
 
-// Update weights by gradient descent.
-void Softmax::UpdateWeights(const VectorXd& inputs, const VectorXd& top_gradient,
-                            double step_size) = 0 {
-  CHECK(input.rows() == weights_.cols() - 1);
-  CHECK(deltas.rows() == weights_.rows());
+  // Compute the associated 'gammas'.
+  for (size_t ii = 0; ii < gammas.rows(); ii++) {
+    gammas(ii) = 0.0;
 
-  for (size_t ii = 0; ii < weights_.rows(); ii++) {
-    for (size_t jj = 0; jj < weights_.cols(); jj++) {
-      weights_(ii, jj) -= step_size * inputs(ii) * top_gradient(jj);
+    for (size_t jj = 0; jj < deltas.rows(); jj++) {
+      gammas(ii) += deltas(jj) * weights_(jj, ii);
     }
   }
 }
