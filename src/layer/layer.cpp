@@ -47,27 +47,16 @@
 
 namespace mininet {
 
-// Factory method.
-Layer::Ptr Layer::Create(size_t input_size, size_t output_size) {
-  Layer::Ptr ptr(new Layer(input_size, output_size));
-  return ptr;
-}
-
 // Initialize weights randomly, and add an extra input dimension for the
 // input bias term.
 Layer::Layer(size_t input_size, size_t output_size)
   : weights_(MatrixXd::Random(output_size, input_size + 1)) {}
 Layer::~Layer() {}
 
-// Get input/output sizes and weights.
-inline size_t Layer::InputSize() const { return weights_.cols() - 1; }
-inline size_t Layer::OutputSize() const { return weights_.rows(); }
-inline const MatrixXd& Layer::ImmutableWeights() const { return weights_; }
-
 // Update weights by gradient descent.
 void Layer::UpdateWeights(const VectorXd& inputs, const VectorXd& deltas,
-                          double step_size) = 0 {
-  CHECK(input.rows() == weights_.cols() - 1);
+                          double step_size) {
+  CHECK(inputs.rows() == weights_.cols() - 1);
   CHECK(deltas.rows() == weights_.rows());
 
   for (size_t jj = 0; jj < weights_.rows(); jj++) {

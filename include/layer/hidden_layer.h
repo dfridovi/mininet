@@ -51,12 +51,18 @@ namespace mininet {
 
 class HiddenLayer : public Layer {
 public:
+  typedef std::shared_ptr<HiddenLayer> Ptr;
+  typedef std::shared_ptr<const HiddenLayer> ConstPtr;
+
+  explicit HiddenLayer(size_t input_size, size_t output_size)
+    : Layer(input_size, output_size) {}
+
   // 'Forward' propagation is inherited from Layer.
   // 'Backward' takes in layer output (computed by 'Forward') and the derivative
   // of loss by that output. It also computes two derivatives of loss:
   // (1) 'deltas' are with respect to the input to the non-linearity
   // (2) 'gammas' are with respect to the input to the layer
-  virtual void Backward(const VectorXd& output, const VectorXd& upsteam_gammas,
+  virtual void Backward(const VectorXd& output, const VectorXd& upstream_gammas,
                         VectorXd& gammas, VectorXd& deltas) const = 0;
 
 }; // class HiddenLayer

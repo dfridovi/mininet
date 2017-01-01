@@ -48,6 +48,16 @@
 
 namespace mininet {
 
+// Factory method.
+OutputLayer::Ptr Softmax::Create(size_t input_size, size_t output_size) {
+  OutputLayer::Ptr ptr(new Softmax(input_size, output_size));
+  return ptr;
+}
+
+// Private constructor. Use the factory method instead.
+Softmax::Softmax(size_t input_size, size_t output_size)
+  : OutputLayer(input_size, output_size) {}
+
 // Activation and gradient. Implement these in derived classes.
 void Softmax::Forward(const VectorXd& input, VectorXd& output) const {
   // Check that input and output are the correct sizes.
@@ -72,9 +82,11 @@ void Softmax::Forward(const VectorXd& input, VectorXd& output) const {
   }
 }
 
-void Softmax::Backward(const LossFunctor& loss, const VectorXd& ground_truth,
-                       const VectorXd& output, VectorXd& gammas,
-                       VectorXd& deltas) const {
+double Softmax::Backward(const LossFunctor::ConstPtr& loss,
+                       const VectorXd& ground_truth, const VectorXd& output,
+                       VectorXd& gammas, VectorXd& deltas) const {
+  CHECK_NOTNULL(loss.get());
+
   // Check that all dimensions line up.
   CHECK(output.rows() == weights_.rows());
   CHECK(gammas.rows() == weights_.cols() - 1);
@@ -83,7 +95,7 @@ void Softmax::Backward(const LossFunctor& loss, const VectorXd& ground_truth,
   // Compute loss value and gradient with respect to 'output'.
   double loss_value = std::numeric_limits<double>::infinity();
   VectorXd loss_gradient(output.rows());
-  CHECK(loss(ground_truth, output, loss_value, loss_gradient));
+  CHECK(loss->Evaluate(ground_truth, output, loss_value, loss_gradient));
 
   // Use the chain rule to compute 'deltas'.
   for (size_t ii = 0; ii < deltas.rows(); ii++) {
@@ -105,6 +117,9 @@ void Softmax::Backward(const LossFunctor& loss, const VectorXd& ground_truth,
       gammas(ii) += deltas(jj) * weights_(jj, ii);
     }
   }
+
+  // Return loss.
+  return loss_value;
 }
 
 } // namespace mininet

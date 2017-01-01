@@ -52,18 +52,13 @@ namespace mininet {
 
 class Layer {
 public:
-  typedef std::shared_ptr<Layer> Ptr;
-  typedef std::shared_ptr<const Layer> ConstPtr;
-
   virtual ~Layer();
-
-  // Factory method.
-  static Ptr Create(size_t input_size, size_t output_size);
+  explicit Layer(size_t input_size, size_t output_size);
 
   // Get input/output sizes and weights.
-  inline size_t InputSize() const;
-  inline size_t OutputSize() const;
-  inline const MatrixXd& ImmutableWeights() const;
+  size_t InputSize() const { return weights_.cols() - 1; }
+  size_t OutputSize() const { return weights_.rows(); }
+  const MatrixXd& ImmutableWeights() const { return weights_; }
 
   // Update weights by gradient descent.
   void UpdateWeights(const VectorXd& inputs, const VectorXd& deltas,
@@ -75,9 +70,6 @@ public:
   virtual void Forward(const VectorXd& input, VectorXd& output) const = 0;
 
 protected:
-  // Protected constructor. Use the factory method instead.
-  explicit Layer(size_t input_size, size_t output_size);
-
   // Weights from input (with bias) to output.
   MatrixXd weights_;
 

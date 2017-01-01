@@ -51,10 +51,17 @@ namespace mininet {
 
 class ReLU : public HiddenLayer {
 public:
+  // Factory method.
+  static HiddenLayer::Ptr Create(size_t input_size, size_t output_size);
+
   // Activation and gradient. Implement these in derived classes.
   void Forward(const VectorXd& input, VectorXd& output) const;
-  void Backward(const VectorXd& upstream_deltas,
-                const VectorXd& values, VectorXd& deltas) const;
+  void Backward(const VectorXd& output, const VectorXd& upstream_gammas,
+                VectorXd& gammas, VectorXd& deltas) const;
+
+private:
+  // Private constructor. Use the factory method instead.
+  explicit ReLU(size_t input_size, size_t output_size);
 }; // class ReLU
 
 } // namespace mininet

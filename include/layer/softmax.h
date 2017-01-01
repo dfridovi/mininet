@@ -51,11 +51,19 @@ namespace mininet {
 
 class Softmax : public OutputLayer {
 public:
+  // Factory method.
+  static OutputLayer::Ptr Create(size_t input_size, size_t output_size);
+
   // Activation and gradient. Implement these in derived classes.
   void Forward(const VectorXd& input, VectorXd& output) const;
-  void Backward(const LossFunctor& loss, const VectorXd& ground_truth,
-                const VectorXd& output, VectorXd& gammas,
-                VectorXd& deltas) const;
+  double Backward(const LossFunctor::ConstPtr& loss, const VectorXd& ground_truth,
+                  const VectorXd& output, VectorXd& gammas,
+                  VectorXd& deltas) const;
+
+private:
+  // Private constructor. Use the factory method instead.
+  explicit Softmax(size_t input_size, size_t output_size);
+
 }; // class Softmax
 
 } // namespace mininet

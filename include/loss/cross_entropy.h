@@ -52,10 +52,16 @@
 namespace mininet {
 
 struct CrossEntropy : public LossFunctor {
+  // Factory method.
+  static LossFunctor::Ptr Create() {
+    LossFunctor::Ptr ptr(new CrossEntropy);
+    return ptr;
+  }
+
   // All loss functors must evaluate the loss and derivative with respect to
   // the input 'values' (which are the output of some 'OutputLayer').
-  bool operator()(const VectorXd& ground_truth, const VectorXd& values,
-                  double& loss, VectorXd& gradient) const {
+  bool Evaluate(const VectorXd& ground_truth, const VectorXd& values,
+                double& loss, VectorXd& gradient) const {
     // Check that 'ground truth' and 'values' are probability distributions
     // on equal-sized alphabets.
     if (ground_truth.rows() != values.rows()) {

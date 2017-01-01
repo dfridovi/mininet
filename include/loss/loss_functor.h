@@ -46,13 +46,18 @@
 
 #include <util/types.h>
 
+#include <memory>
+
 namespace mininet {
 
 struct LossFunctor {
+  typedef std::shared_ptr<LossFunctor> Ptr;
+  typedef std::shared_ptr<const LossFunctor> ConstPtr;
+
   // All loss functors must evaluate the loss and derivative with respect to
   // the input 'values' (which are the output of some 'OutputLayer').
-  virtual bool operator()(const VectorXd& ground_truth, const VectorXd& values,
-                          double& loss, VectorXd& gradient) const = 0;
+  virtual bool Evaluate(const VectorXd& ground_truth, const VectorXd& values,
+                        double& loss, VectorXd& gradient) const = 0;
 }; //\struct LossFunctor
 
 }  //\namespace mininet

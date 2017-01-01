@@ -52,13 +52,19 @@ namespace mininet {
 
 class OutputLayer : public Layer {
 public:
+  typedef std::shared_ptr<OutputLayer> Ptr;
+  typedef std::shared_ptr<const OutputLayer> ConstPtr;
+
+  explicit OutputLayer(size_t input_size, size_t output_size)
+    : Layer(input_size, output_size) {}
+
   // 'Forward' propagation is inherited from Layer. 'Backward' computes the
   // so-called 'deltas' and 'gammas', i.e. the derivative of loss with respect
   // to the pre-nonlinearity values and layer inputs, respectively. Note that
   // 'output' holds the output of the non-linearity.
-  virtual void Backward(const LossFunctor& loss, const VectorXd& ground_truth,
-                        const VectorXd& output, VectorXd& gammas,
-                        VectorXd& deltas) const = 0;
+  virtual double Backward(const LossFunctor::ConstPtr& loss,
+                          const VectorXd& ground_truth, const VectorXd& output,
+                          VectorXd& gammas, VectorXd& deltas) const = 0;
 
 }; // class OutputLayer
 

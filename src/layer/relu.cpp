@@ -48,6 +48,16 @@
 
 namespace mininet {
 
+// Factory method.
+HiddenLayer::Ptr ReLU::Create(size_t input_size, size_t output_size) {
+  HiddenLayer::Ptr ptr(new ReLU(input_size, output_size));
+  return ptr;
+}
+
+// Private constructor. Use the factory method instead.
+ReLU::ReLU(size_t input_size, size_t output_size)
+  : HiddenLayer(input_size, output_size) {}
+
 // Activation and gradient. Implement these in derived classes.
 void ReLU::Forward(const VectorXd& input, VectorXd& output) const {
   // Check that input and output are the correct sizes.
