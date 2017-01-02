@@ -43,6 +43,8 @@
 
 #include <trainer/backprop_trainer.h>
 
+#include <iostream>
+
 namespace mininet {
 
 BackpropTrainer::~BackpropTrainer() {}
@@ -53,7 +55,32 @@ BackpropTrainer::BackpropTrainer(const Network& network, const Dataset& dataset,
 
 // All trainers must implement this interface.
 void BackpropTrainer::Train() {
-  // TODO!
+  double learning_rate = params_.learning_rate_;
+  double loss = std::numeric_limits<double>::infinity();
+
+  for (size_t ii = 0; ii < params_.num_epochs_; ii++) {
+    for (size_t jj = 0; jj < params_.num_iters_per_epoch_; jj++) {
+      // Get a new batch.
+      std::vector<VectorXd> input_samples, output_samples;
+      if (!dataset_.Batch(params_.batch_size_, input_samples, output_samples))
+        VLOG(1) << "Error while generating a batch.";
+
+      // Compute average layer inputs and deltas.
+      std::vector<VectorXd> layer_inputs_avg, deltas_avg;
+      network_.RunBatch(input_samples, output_samples,
+                        layer_inputs_avg, deltas_avg);
+
+      // Update weights.
+      loss = network_.UpdateWeights(layer_inputs_avg, deltas_avg,
+                                    learning_rate);
+    }
+
+    // Print a message.
+    std::printf("Epoch %zu: loss = %f\n", ii, loss);
+
+    // Update learning rate.
+    learning_rate *= params_.learning_rate_decay_;
+  }
 }
 
   double BackpropTrainer::Test() const {
