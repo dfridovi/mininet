@@ -7,7 +7,6 @@ data/
 */figures/
 *.eps
 *.jpg
-*.png
 
 # Compiled object files
 *.slo
