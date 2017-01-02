@@ -1,0 +1,33 @@
+\hypertarget{classmininet_1_1_network}{}\section{mininet\+:\+:Network Class Reference}
+\label{classmininet_1_1_network}\index{mininet\+::\+Network@{mininet\+::\+Network}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classmininet_1_1_network_acf2c102c6f79c152380124af7b327b89}{}\label{classmininet_1_1_network_acf2c102c6f79c152380124af7b327b89} 
+{\bfseries Network} (std\+::vector$<$ \hyperlink{structmininet_1_1_layer_params}{Layer\+Params} $>$ params, const Loss\+Functor\+::\+Const\+Ptr \&loss)
+\item 
+\hypertarget{classmininet_1_1_network_a56fe1d7f1daf3433c9f0d5df408b4800}{}\label{classmininet_1_1_network_a56fe1d7f1daf3433c9f0d5df408b4800} 
+void {\bfseries operator()} (const Vector\+Xd \&input, Vector\+Xd \&output) const
+\item 
+\hypertarget{classmininet_1_1_network_ae76628cf7258aa0b8d0ee147e580623e}{}\label{classmininet_1_1_network_ae76628cf7258aa0b8d0ee147e580623e} 
+double {\bfseries Loss} (const std\+::vector$<$ Vector\+Xd $>$ \&inputs, const std\+::vector$<$ Vector\+Xd $>$ \&ground\+\_\+truths) const
+\item 
+\hypertarget{classmininet_1_1_network_abc9f2dbdbc85532cb2758f6877d4d292}{}\label{classmininet_1_1_network_abc9f2dbdbc85532cb2758f6877d4d292} 
+double {\bfseries Run\+Batch} (const std\+::vector$<$ Vector\+Xd $>$ \&batch, const std\+::vector$<$ Vector\+Xd $>$ \&ground\+\_\+truth, std\+::vector$<$ Vector\+Xd $>$ \&layer\+\_\+inputs\+\_\+avg, std\+::vector$<$ Vector\+Xd $>$ \&deltas\+\_\+avg) const
+\item 
+\hypertarget{classmininet_1_1_network_a96c186885b661e8dcdef8e7a04e06528}{}\label{classmininet_1_1_network_a96c186885b661e8dcdef8e7a04e06528} 
+void {\bfseries Update\+Weights} (const std\+::vector$<$ Vector\+Xd $>$ \&layer\+\_\+inputs, const std\+::vector$<$ Vector\+Xd $>$ \&deltas, double step\+\_\+size)
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 57 of file network.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/davidfridovichkeil/\+Documents/\+Developer/mininet/include/net/network.\+h\item 
+/\+Users/davidfridovichkeil/\+Documents/\+Developer/mininet/src/net/network.\+cpp\end{DoxyCompactItemize}
