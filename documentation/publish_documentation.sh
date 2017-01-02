@@ -15,7 +15,7 @@ git remote set-branches --add origin gh-pages
 git fetch origin
 
 # Commit documentation in master.
-cd ../../..
+cd ..
 git add ${DOCUMENTATION_PATH}
 git commit -m "adding documentation"
 
