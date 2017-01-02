@@ -113,27 +113,64 @@ void Network::operator()(const VectorXd& input, VectorXd& output) const {
   output_layer_->Forward(current_input, output);
 }
 
-// Update weights. Returns current loss.
-double Network::UpdateWeights(const VectorXd& input, const VectorXd& ground_truth,
-                              double step_size) {
-  // Foward and backward passes.
-  std::vector<VectorXd> layer_inputs;
-  Forward(input, layer_inputs);
+// Compute average layer inputs and deltas for a batch of inputs. 
+// Returns average loss.
+double Network::RunBatch(const std::vector<VectorXd> batch, 
+                              const std::vector<VectorXd> ground_truth,
+                              std::vector<VectorXd> layer_inputs_avg,
+                              std::vector<VectorXd> deltas_avg) {
+  // Keep track of running sum for deltas, layer_inputs, and loss.
+  std::vector<VectorXd> layer_inputs_sum;
+  std::vector<VectorXd> deltas_sum;
+  double loss_sum = 0;
 
-  std::vector<VectorXd> deltas;
-  const double loss = Backward(ground_truth, layer_inputs, deltas);
+  // Forward and backward passes for each element of the batch.
+  for (size_t ii = 0; ii < batch.size(); ii++) {
 
-  CHECK(layer_inputs.size() == hidden_layers_.size() + 2);
-  CHECK(deltas.size() == hidden_layers_.size() + 1);
+    const VectorXd input = batch[ii];
 
-  // Update all weights.
+    std::vector<VectorXd> layer_inputs;
+    Forward(input, layer_inputs);
+
+    std::vector<VectorXd> deltas;
+    double loss = Backward(ground_truth[ii], layer_inputs, deltas);
+
+    CHECK(layer_inputs.size() == hidden_layers_.size() + 2);
+    CHECK(deltas.size() == hidden_layers_.size() + 1);
+
+    if (ii == 0) { 
+      layer_inputs_sum = layer_inputs;
+      deltas_sum = deltas;
+    }
+    else {
+      for (size_t jj = 0; jj <= hidden_layers_.size(); jj++) {
+        layer_inputs_sum[jj] += layer_inputs[jj];
+        deltas_sum[jj] += deltas[jj];
+      }
+      layer_inputs_sum.back() += layer_inputs.back();
+    }
+    loss_sum += loss;
+  }
+
+  // Compute averages.
+  for (size_t ii = 0; ii <= hidden_layers_.size(); ii++) {
+    layer_inputs_avg[ii] = layer_inputs_sum[ii] / batch.size();
+    deltas_avg[ii] = deltas_sum[ii] / batch.size();
+  }
+  layer_inputs_avg.back() = layer_inputs_sum.back() / batch.size();
+
+  // Return loss.
+  return loss_sum /= batch.size();
+}
+
+// Update weights.
+void Network::UpdateWeights(const std::vector<VectorXd> layer_inputs,
+                            const std::vector<VectorXd> deltas,
+                            double step_size) {
   for (size_t ii = 0; ii < hidden_layers_.size(); ii++)
     hidden_layers_[ii]->UpdateWeights(layer_inputs[ii], deltas[ii], step_size);
 
-  output_layer_->UpdateWeights(layer_inputs.back(), deltas.back(), step_size);
-
-  // Return loss.
-  return loss;
+  output_layer_->UpdateWeights(layer_inputs[hidden_layers_.size()], deltas.back(), step_size);
 }
 
 // Forward pass: compute the input of each layer. Last entry is output of final
