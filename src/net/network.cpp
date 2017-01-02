@@ -48,7 +48,7 @@
 namespace mininet {
 
 Network::~Network() {}
-Network::Network(std::vector<LayerParameters> params,
+Network::Network(std::vector<LayerParams> params,
                  const LossFunctor::ConstPtr& loss)
   : loss_(loss) {
   CHECK_NOTNULL(loss.get());

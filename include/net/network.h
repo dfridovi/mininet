@@ -47,7 +47,7 @@
 #include <util/types.h>
 #include <layer/softmax.h>
 #include <layer/relu.h>
-#include <layer/layer_parameters.h>
+#include <layer/layer_params.h>
 #include <loss/loss_functor.h>
 
 #include <vector>
@@ -56,7 +56,7 @@ namespace mininet {
 
 class Network {
 public:
-  explicit Network(std::vector<LayerParameters> params,
+  explicit Network(std::vector<LayerParams> params,
                    const LossFunctor::ConstPtr& loss);
   ~Network();
 
