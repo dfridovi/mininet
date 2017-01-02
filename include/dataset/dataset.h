@@ -54,25 +54,26 @@ namespace mininet {
 
 class Dataset {
 public:
-  explicit Dataset(const std::vector<double>& data,
+  explicit Dataset(const std::vector<VectorXd>& inputs,
+                   const std::vector<VectorXd>& outputs,
                    double training_fraction = 0.75);
   ~Dataset();
 
   // Get a random sample from the training set. Returns false if there are not
   // enough training samples.
-  bool Batch(size_t batch_size, std::vector<double>& batch) const;
+  bool Batch(size_t batch_size, std::vector<VectorXd>& input_samples,
+             std::vector<VectorXd>& output_samples);
 
   // Get a const reference to the testing set.
-  const std::vector<double>& TestingSet() const;
+  const std::vector<VectorXd>& TestingInputs() const;
+  const std::vector<VectorXd>& TestingOutputs() const;
 
 private:
   // Training and testing sets.
-  std::vector<double> training_;
-  std::vector<double> testing_;
-
-  // Random number generation.
-  //  std::random_device
-
+  std::vector<VectorXd> training_inputs_;
+  std::vector<VectorXd> training_outputs_;
+  std::vector<VectorXd> testing_inputs_;
+  std::vector<VectorXd> testing_outputs_;
 }; // class Dataset
 
 } // namespace mininet
