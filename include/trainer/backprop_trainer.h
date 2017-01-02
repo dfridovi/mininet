@@ -55,7 +55,8 @@ public:
                            const BackpropParams& params);
   ~BackpropTrainer();
 
-  // All trainers must implement this interface.
+  // All trainers must implement this interface. 'Train' runs backprop and SGD.
+  // 'Test' evaluates on the test set.
   void Train();
   double Test() const;
 

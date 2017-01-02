@@ -63,16 +63,20 @@ public:
   // Treat the network as a functor. Computes the output of the net.
   void operator()(const VectorXd& input, VectorXd& output) const;
 
-  // Compute average layer inputs and deltas for a batch of inputs. 
+  // Compute average loss on a set of inputs and ground truths.
+  double Loss(const std::vector<VectorXd>& inputs,
+              const std::vector<VectorXd>& ground_truths) const;
+
+  // Compute average layer inputs and deltas for a batch of inputs.
   // Returns average loss.
-  double RunBatch(const std::vector<VectorXd> batch, 
-                  const std::vector<VectorXd> ground_truth,
-                  std::vector<VectorXd> layer_inputs_avg,
-                  std::vector<VectorXd> deltas_avg);
+  double RunBatch(const std::vector<VectorXd>& batch,
+                  const std::vector<VectorXd>& ground_truth,
+                  std::vector<VectorXd>& layer_inputs_avg,
+                  std::vector<VectorXd>& deltas_avg) const;
 
   // Update weights.
-  void UpdateWeights(const std::vector<VectorXd> layer_inputs,
-                     const std::vector<VectorXd> deltas,
+  void UpdateWeights(const std::vector<VectorXd>& layer_inputs,
+                     const std::vector<VectorXd>& deltas,
                      double step_size);
 
 private:

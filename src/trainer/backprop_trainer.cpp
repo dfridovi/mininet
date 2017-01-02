@@ -44,6 +44,7 @@
 #include <trainer/backprop_trainer.h>
 
 #include <iostream>
+#include <glog/logging.h>
 
 namespace mininet {
 
@@ -67,12 +68,11 @@ void BackpropTrainer::Train() {
 
       // Compute average layer inputs and deltas.
       std::vector<VectorXd> layer_inputs_avg, deltas_avg;
-      network_.RunBatch(input_samples, output_samples,
-                        layer_inputs_avg, deltas_avg);
+      loss = network_.RunBatch(input_samples, output_samples,
+                               layer_inputs_avg, deltas_avg);
 
       // Update weights.
-      loss = network_.UpdateWeights(layer_inputs_avg, deltas_avg,
-                                    learning_rate);
+      network_.UpdateWeights(layer_inputs_avg, deltas_avg, learning_rate);
     }
 
     // Print a message.
@@ -83,9 +83,8 @@ void BackpropTrainer::Train() {
   }
 }
 
-  double BackpropTrainer::Test() const {
-  // TODO!
-  return 0.0;
+double BackpropTrainer::Test() const {
+  return network_.Loss(dataset_.TestingInputs(), dataset_.TestingOutputs());
 }
 
 } // namespace mininet
