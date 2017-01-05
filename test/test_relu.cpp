@@ -95,7 +95,7 @@ TEST(ReLU, TestSingleLayer) {
   // For a bunch of random weights, compute the derivative two ways:
   // (1) with the 'layer_inputs' and 'deltas' computed above, and
   // (2) with numerical differentiation.
-  std::uniform_int_distribution<size_t> input_id(0, kNumInputs1 - 1);
+  std::uniform_int_distribution<size_t> input_id(0, kNumInputs1);
   std::uniform_int_distribution<size_t> output_id(0, kNumInputs2 - 1);
   for (size_t kk = 0; kk < kNumChecks; kk++) {
     const size_t jj = input_id(rng);
@@ -109,7 +109,8 @@ TEST(ReLU, TestSingleLayer) {
     net.PerturbWeight(0, ii, jj, -kPerturbation);
 
     // Compute derivative using backprop.
-    const double backprop_derivative = layer_inputs[0](jj) * deltas[0](ii);
+    const double backprop_derivative = (jj == kNumInputs1) ?
+      deltas[0](ii) : layer_inputs[0](jj) * deltas[0](ii);
 
     // Make sure they are close.
     EXPECT_NEAR(numerical_derivative, backprop_derivative, kEpsilon);

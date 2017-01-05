@@ -59,10 +59,12 @@ void Layer::UpdateWeights(const VectorXd& inputs, const VectorXd& deltas,
   CHECK(inputs.rows() == weights_.cols() - 1);
   CHECK(deltas.rows() == weights_.rows());
 
-  for (size_t jj = 0; jj < weights_.rows(); jj++) {
-    for (size_t ii = 0; ii < weights_.cols() - 1; ii++) {
-      weights_(jj, ii) -= step_size * inputs(ii) * deltas(jj);
-    }
+  for (size_t ii = 0; ii < weights_.rows(); ii++) {
+    for (size_t jj = 0; jj < weights_.cols() - 1; jj++)
+      weights_(ii, jj) -= step_size * inputs(jj) * deltas(ii);
+
+    // Handle last column (bias).
+    weights_(ii, weights_.cols() - 1) -= step_size * deltas(ii);
   }
 }
 

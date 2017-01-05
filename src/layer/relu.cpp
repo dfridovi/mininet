@@ -90,11 +90,11 @@ void ReLU::Backward(const VectorXd& output, const VectorXd& upstream_gammas,
   }
 
   // Compute the associated 'gammas'.
-  for (size_t ii = 0; ii < gammas.rows(); ii++) {
-    gammas(ii) = 0.0;
+  for (size_t jj = 0; jj < gammas.rows(); jj++) {
+    gammas(jj) = 0.0;
 
-    for (size_t jj = 0; jj < deltas.rows(); jj++) {
-      gammas(ii) += deltas(jj) * weights_(jj, ii);
+    for (size_t ii = 0; ii < deltas.rows(); ii++) {
+      gammas(jj) += deltas(ii) * weights_(ii, jj);
     }
   }
 }

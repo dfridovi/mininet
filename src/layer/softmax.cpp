@@ -75,7 +75,7 @@ void Softmax::Forward(const VectorXd& input, VectorXd& output) const {
   }
 
   // Catch small sum.
-  if (std::abs(sum) < 1e-16) {
+  if (sum < 1e-16) {
     VLOG(1) << "Sum was too small in softmax layer. Did not normalize.";
   } else {
     output /= sum;
@@ -83,8 +83,8 @@ void Softmax::Forward(const VectorXd& input, VectorXd& output) const {
 }
 
 double Softmax::Backward(const LossFunctor::ConstPtr& loss,
-                       const VectorXd& ground_truth, const VectorXd& output,
-                       VectorXd& gammas, VectorXd& deltas) const {
+                         const VectorXd& ground_truth, const VectorXd& output,
+                         VectorXd& gammas, VectorXd& deltas) const {
   CHECK_NOTNULL(loss.get());
 
   // Check that all dimensions line up.
@@ -103,18 +103,18 @@ double Softmax::Backward(const LossFunctor::ConstPtr& loss,
 
     for (size_t jj = 0; jj < loss_gradient.rows(); jj++) {
       if (ii == jj)
-        deltas(ii) += loss_gradient(jj) * output(ii) * (1.0 - output(ii));
+        deltas(ii) += loss_gradient(jj) * output(ii) * (1.0 - output(jj));
       else
         deltas(ii) -= loss_gradient(jj) * output(ii) * output(jj);
     }
   }
 
   // Compute the associated 'gammas'.
-  for (size_t ii = 0; ii < gammas.rows(); ii++) {
-    gammas(ii) = 0.0;
+  for (size_t jj = 0; jj < gammas.rows(); jj++) {
+    gammas(jj) = 0.0;
 
-    for (size_t jj = 0; jj < deltas.rows(); jj++) {
-      gammas(ii) += deltas(jj) * weights_(jj, ii);
+    for (size_t ii = 0; ii < deltas.rows(); ii++) {
+      gammas(jj) += deltas(ii) * weights_(ii, jj);
     }
   }
 
