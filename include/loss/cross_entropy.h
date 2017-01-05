@@ -108,7 +108,7 @@ struct CrossEntropy : public LossFunctor {
 
     return true;
   }
-}
+}; //\struct CrossEntropy
 
 }  //\namespace mininet
 

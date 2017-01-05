@@ -240,13 +240,25 @@ double Network::Backward(const VectorXd& ground_truth,
     VectorXd next_gamma(layer->InputSize());
     VectorXd next_delta(layer->OutputSize());
 
-    layer->Backward(layer_inputs[reverse_ii + 1], gamma, next_gamma, next_delta);
+    layer->Backward(layer_inputs[reverse_ii + 1], gamma,
+                    next_gamma, next_delta);
     deltas[reverse_ii] = next_delta;
     gamma = next_gamma;
   }
 
   // Return loss.
   return loss;
+}
+
+// Perturb a specific weight.
+void Network::PerturbWeight(size_t layer_number, size_t ii, size_t jj,
+                            double amount) {
+  CHECK(layer_number < hidden_layers_.size());
+
+  if (layer_number == hidden_layers_.size())
+    output_layer_->PerturbWeight(ii, jj, amount);
+  else
+    hidden_layers_[layer_number]->PerturbWeight(ii, jj, amount);
 }
 
 } // namespace mininet

@@ -55,6 +55,11 @@ struct LayerParams {
   // Input/output size.
   size_t input_size_ = 10;
   size_t output_size_ = 10;
+
+  // Constructor/destructor.
+  LayerParams(LayerType type, size_t input_size, size_t output_size)
+    : type_(type), input_size_(input_size), output_size_(output_size) {}
+  ~LayerParams() {}
 }; //\struct LayerParameters
 
 }  //\namespace mininet

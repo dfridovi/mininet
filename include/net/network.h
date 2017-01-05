@@ -79,6 +79,9 @@ public:
                      const std::vector<VectorXd>& deltas,
                      double step_size);
 
+  // Perturb a specific weight.
+  void PerturbWeight(size_t layer_number, size_t ii, size_t jj, double amount);
+
 private:
   // Forward pass: compute the inputs of each layer (outputs of previous).
   void Forward(const VectorXd& input,

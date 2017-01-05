@@ -64,6 +64,9 @@ public:
   void UpdateWeights(const VectorXd& inputs, const VectorXd& deltas,
                      double step_size);
 
+  // Perturb a single weight by a specified amount.
+  void PerturbWeight(size_t ii, size_t jj, double amount);
+
   // Layers need to propagate forward. Specific types of layers will also
   // have a 'Backward' function to compute a derivative of loss with respect to
   // sum node value ('delta').

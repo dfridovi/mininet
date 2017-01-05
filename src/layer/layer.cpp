@@ -66,4 +66,12 @@ void Layer::UpdateWeights(const VectorXd& inputs, const VectorXd& deltas,
   }
 }
 
+// Perturb a single weight by a specified amount.
+void Layer::PerturbWeight(size_t ii, size_t jj, double amount) {
+  CHECK(ii < weights_.rows());
+  CHECK(jj < weights_.cols());
+
+  weights_(ii, jj) += amount;
+}
+
 } // namespace mininet
