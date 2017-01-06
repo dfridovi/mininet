@@ -44,28 +44,34 @@
 #include <layer/layer.h>
 
 #include <glog/logging.h>
+#include <random>
+#include <iostream>
 
 namespace mininet {
 
 // Initialize weights randomly, and add an extra input dimension for the
 // input bias term.
-Layer::Layer(size_t input_size, size_t output_size)
-  : weights_(MatrixXd::Random(output_size, input_size + 1)) {}
 Layer::~Layer() {}
+Layer::Layer(size_t input_size, size_t output_size)
+  : weights_(MatrixXd::Zero(output_size, input_size + 1)) {
+  // Create a random number generator for a normal distribution of mean
+  // 0.0 and standard deviation 0.1.
+  std::random_device rd;
+  std::default_random_engine rng(rd());
+  std::normal_distribution<double> gaussian(0.0, 0.1);
+
+  // Populate weights from this distribution.
+  for (size_t ii = 0; ii < weights_.rows(); ii++)
+    for (size_t jj = 0; jj < weights_.cols(); jj++)
+      weights_(ii, jj) = gaussian(rng);
+}
 
 // Update weights by gradient descent.
-void Layer::UpdateWeights(const VectorXd& inputs, const VectorXd& deltas,
-                          double step_size) {
-  CHECK(inputs.rows() == weights_.cols() - 1);
-  CHECK(deltas.rows() == weights_.rows());
+void Layer::UpdateWeights(const MatrixXd& derivatives, double step_size) {
+  CHECK(derivatives.rows() == weights_.rows());
+  CHECK(derivatives.cols() == weights_.cols());
 
-  for (size_t ii = 0; ii < weights_.rows(); ii++) {
-    for (size_t jj = 0; jj < weights_.cols() - 1; jj++)
-      weights_(ii, jj) -= step_size * inputs(jj) * deltas(ii);
-
-    // Handle last column (bias).
-    weights_(ii, weights_.cols() - 1) -= step_size * deltas(ii);
-  }
+  weights_ -= step_size * derivatives;
 }
 
 // Perturb a single weight by a specified amount.

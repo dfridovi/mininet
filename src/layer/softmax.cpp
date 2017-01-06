@@ -70,14 +70,14 @@ void Softmax::Forward(const VectorXd& input, VectorXd& output) const {
   // Compute non-linearity, with shift for numerical stability.
   const double max_output = output.maxCoeff();
   double sum = 0.0;
-  for (size_t ii = 0; ii < input.rows(); ii++) {
+  for (size_t ii = 0; ii < output.rows(); ii++) {
     output(ii) = std::exp(output(ii) - max_output);
     sum += output(ii);
   }
 
   // Catch small sum.
-  if (sum < 1e-16) {
-    VLOG(1) << "Sum was too small in softmax layer. Did not normalize.";
+  if (sum < 1e-8) {
+    LOG(WARNING) << "Sum was too small in softmax layer. Did not normalize.";
   } else {
     output /= sum;
   }

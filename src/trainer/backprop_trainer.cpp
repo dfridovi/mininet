@@ -64,15 +64,14 @@ void BackpropTrainer::Train() {
       // Get a new batch.
       std::vector<VectorXd> input_samples, output_samples;
       if (!dataset_.Batch(params_.batch_size_, input_samples, output_samples))
-        VLOG(1) << "Error while generating a batch.";
+        LOG(WARNING) << "Error while generating a batch.";
 
       // Compute average layer inputs and deltas.
-      std::vector<VectorXd> layer_inputs_avg, deltas_avg;
-      loss = network_.RunBatch(input_samples, output_samples,
-                               layer_inputs_avg, deltas_avg);
+      std::vector<MatrixXd> derivatives;
+      loss = network_.RunBatch(input_samples, output_samples, derivatives);
 
       // Update weights.
-      network_.UpdateWeights(layer_inputs_avg, deltas_avg, learning_rate);
+      network_.UpdateWeights(derivatives, learning_rate);
     }
 
     // Print a message.

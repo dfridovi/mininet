@@ -71,12 +71,10 @@ public:
   // Returns average loss.
   double RunBatch(const std::vector<VectorXd>& batch,
                   const std::vector<VectorXd>& ground_truth,
-                  std::vector<VectorXd>& layer_inputs_avg,
-                  std::vector<VectorXd>& deltas_avg) const;
+                  std::vector<MatrixXd>& derivatives) const;
 
   // Update weights.
-  void UpdateWeights(const std::vector<VectorXd>& layer_inputs,
-                     const std::vector<VectorXd>& deltas,
+  void UpdateWeights(const std::vector<MatrixXd>& derivatives,
                      double step_size);
 
   // Perturb a specific weight.

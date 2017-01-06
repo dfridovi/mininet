@@ -59,9 +59,9 @@ TEST(ReLU, TestSingleLayer) {
   const size_t kNumInputs1 = 5;
   const size_t kNumInputs2 = 5;
   const size_t kNumOutputs = 5;
-  const size_t kNumChecks = 10;
-  const double kPerturbation = 1e-4;
-  const double kInversePerturbation = 1e4;
+  const size_t kNumChecks = 5;
+  const double kPerturbation = 1e-5;
+  const double kInversePerturbation = 1e5;
   const double kEpsilon = 1e-8;
 
   // Create a network.
@@ -84,33 +84,38 @@ TEST(ReLU, TestSingleLayer) {
   // Run this input/output pair through the network.
   std::vector<VectorXd> batch = { input };
   std::vector<VectorXd> ground_truth = { output };
-  std::vector<VectorXd> layer_inputs, deltas;
+  std::vector<MatrixXd> derivatives;
 
   const double empirical_loss =
-    net.RunBatch(batch, ground_truth, layer_inputs, deltas);
+    net.RunBatch(batch, ground_truth, derivatives);
 
-  ASSERT_TRUE(layer_inputs.size() == 3);
-  ASSERT_TRUE(deltas.size() == 2);
+  ASSERT_TRUE(derivatives.size() == 2);
 
   // For a bunch of random weights, compute the derivative two ways:
-  // (1) with the 'layer_inputs' and 'deltas' computed above, and
+  // (1) with the 'derivatives' computed above, and
   // (2) with numerical differentiation.
-  std::uniform_int_distribution<size_t> input_id(0, kNumInputs1);
-  std::uniform_int_distribution<size_t> output_id(0, kNumInputs2 - 1);
+  std::uniform_int_distribution<size_t> input_id(0, kNumInputs2); //(0, kNumInputs1);
+  std::uniform_int_distribution<size_t> output_id(0, kNumOutputs - 1); //(0, kNumInputs2 - 1);
   for (size_t kk = 0; kk < kNumChecks; kk++) {
     const size_t jj = input_id(rng);
     const size_t ii = output_id(rng);
 
-    // Compute derivative with a forward difference.
-    net.PerturbWeight(0, ii, jj, kPerturbation);
-    const double perturbed_loss = net.Loss(batch, ground_truth);
+    // Compute derivative with a symmetric difference.
+    net.PerturbWeight(1, ii, jj, kPerturbation);
+    const double forward_loss = net.Loss(batch, ground_truth);
+
+    net.PerturbWeight(1, ii, jj, -2.0 * kPerturbation);
+    const double backward_loss = net.Loss(batch, ground_truth);
+
+    std::cout << "forward loss = " << forward_loss << ", backward loss = "
+              << backward_loss << std::endl;
+
     const double numerical_derivative =
-      kInversePerturbation * (perturbed_loss - empirical_loss);
-    net.PerturbWeight(0, ii, jj, -kPerturbation);
+      0.5 * kInversePerturbation * (forward_loss - backward_loss);
+    net.PerturbWeight(1, ii, jj, kPerturbation);
 
     // Compute derivative using backprop.
-    const double backprop_derivative = (jj == kNumInputs1) ?
-      deltas[0](ii) : layer_inputs[0](jj) * deltas[0](ii);
+    const double backprop_derivative = derivatives[1](ii, jj);
 
     // Make sure they are close.
     EXPECT_NEAR(numerical_derivative, backprop_derivative, kEpsilon);

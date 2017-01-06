@@ -61,7 +61,7 @@ public:
   const MatrixXd& ImmutableWeights() const { return weights_; }
 
   // Update weights by gradient descent.
-  void UpdateWeights(const VectorXd& inputs, const VectorXd& deltas,
+  void UpdateWeights(const MatrixXd& derivatives,
                      double step_size);
 
   // Perturb a single weight by a specified amount.

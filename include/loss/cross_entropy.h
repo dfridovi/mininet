@@ -70,32 +70,34 @@ struct CrossEntropy : public LossFunctor {
       return false;
     }
 
-    if (ground_truth.sum() < 1.0 - 1e-8 || ground_truth.sum() > 1.0 + 1e-8) {
-      LOG(WARNING) << "Ground truth vector does not sum to unity.";
+    if (ground_truth.sum() < 1.0 - 1e-4 || ground_truth.sum() > 1.0 + 1e-4) {
+      LOG(WARNING) << "Ground truth vector does not sum to unity ("
+                   << ground_truth.sum() << ").";
       return false;
     }
 
-    if (values.sum() < 1.0 - 1e-8 || values.sum() > 1.0 + 1e-8) {
-      LOG(WARNING) << "Values vector does not sum to unity.";
+    if (values.sum() < 1.0 - 1e-4 || values.sum() > 1.0 + 1e-4) {
+      LOG(WARNING) << "Values vector does not sum to unity (" << values.sum()
+                   << ").";
       return false;
     }
 
-    if (ground_truth.minCoeff() < 0.0) {
+    if (ground_truth.minCoeff() < -1e-4) {
       LOG(WARNING) << "Ground truth vector contains a number less than 0.0.";
       return false;
     }
 
-    if (ground_truth.maxCoeff() > 1.0) {
+    if (ground_truth.maxCoeff() > 1.0 + 1e-4) {
       LOG(WARNING) << "Ground truth vector contains a number greater than 1.0.";
       return false;
     }
 
-    if (values.minCoeff() < 0.0) {
+    if (values.minCoeff() < -1e-4) {
       LOG(WARNING) << "Values vector contains a number less than 0.0.";
       return false;
     }
 
-    if (values.maxCoeff() > 1.0) {
+    if (values.maxCoeff() > 1.0 + 1e-4) {
       LOG(WARNING) << "Values vector contains a number greater than 1.0.";
       return false;
     }
@@ -104,7 +106,12 @@ struct CrossEntropy : public LossFunctor {
     loss = 0.0;
     for (size_t ii = 0; ii < ground_truth.rows(); ii++) {
       loss -= ground_truth(ii) * std::log(std::max(values(ii), 1e-4));
-      gradient(ii) = -ground_truth(ii) / std::max(values(ii), 1e-4);
+
+      // Catch small values(ii).
+      if (values(ii) < 1e-4)
+        gradient(ii) = 0.0;
+      else
+        gradient(ii) = -ground_truth(ii) / values(ii);
     }
 
     return true;

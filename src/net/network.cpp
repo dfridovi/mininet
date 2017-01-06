@@ -136,58 +136,59 @@ double Network::Loss(const std::vector<VectorXd>& inputs,
 // Returns average loss.
 double Network::RunBatch(const std::vector<VectorXd>& inputs,
                          const std::vector<VectorXd>& ground_truths,
-                         std::vector<VectorXd>& layer_inputs_avg,
-                         std::vector<VectorXd>& deltas_avg) const {
-  // Keep track of running sum for deltas, layer_inputs, and loss.
-  layer_inputs_avg.clear();
-  deltas_avg.clear();
+                         std::vector<MatrixXd>& derivatives) const {
+  // Keep track of running sums of derivatives and loss.
+  derivatives.clear();
   double loss_sum = 0.0;
 
+  // Set up derivative matrices.
+  for (size_t ii = 0; ii < hidden_layers_.size(); ii++) {
+    derivatives.push_back(MatrixXd::Zero(hidden_layers_[ii]->OutputSize(),
+                                         hidden_layers_[ii]->InputSize() + 1));
+  }
+
+  derivatives.push_back(MatrixXd::Zero(output_layer_->OutputSize(),
+                                       output_layer_->InputSize() + 1));
+
   // Forward and backward passes for each element of the inputs.
-  for (size_t ii = 0; ii < inputs.size(); ii++) {
+  for (size_t ll = 0; ll < inputs.size(); ll++) {
     std::vector<VectorXd> layer_inputs;
-    Forward(inputs[ii], layer_inputs);
+    Forward(inputs[ll], layer_inputs);
 
     std::vector<VectorXd> deltas;
-    loss_sum += Backward(ground_truths[ii], layer_inputs, deltas);
+    loss_sum += Backward(ground_truths[ll], layer_inputs, deltas);
 
-    // Compute running sums.
-    if (ii == 0) {
-      layer_inputs_avg = layer_inputs;
-      deltas_avg = deltas;
-    } else {
-      for (size_t jj = 0; jj <= hidden_layers_.size(); jj++) {
-        layer_inputs_avg[jj] += layer_inputs[jj];
-        deltas_avg[jj] += deltas[jj];
-      }
+    CHECK(layer_inputs.size() == hidden_layers_.size() + 2);
+    CHECK(deltas.size() == hidden_layers_.size() + 1);
 
-      layer_inputs_avg.back() += layer_inputs.back();
+    // Compute derivatives with respect to each layer's weights.
+    for (size_t kk = 0; kk < hidden_layers_.size() + 1; kk++) {
+      for (size_t jj = 0; jj < derivatives[kk].cols() - 1; jj++)
+        for (size_t ii = 0; ii < derivatives[kk].rows(); ii++)
+          derivatives[kk](ii, jj) += layer_inputs[kk](jj) * deltas[kk](ii);
+
+      // Catch bias weights.
+      for (size_t ii = 0; ii < derivatives[kk].rows(); ii++)
+        derivatives[kk].rightCols(1)(ii) += deltas[kk](ii);
     }
   }
 
-  // Compute averages.
-  for (size_t ii = 0; ii <= hidden_layers_.size(); ii++) {
-    layer_inputs_avg[ii] /= static_cast<double>(inputs.size());
-    deltas_avg[ii] /= static_cast<double>(inputs.size());
-  }
+  // Average.
+  for (size_t kk = 0; kk < hidden_layers_.size() + 1; kk++)
+    derivatives[kk] /= static_cast<double>(inputs.size());
 
-  layer_inputs_avg.back() /= static_cast<double>(inputs.size());
-
-  // Return loss.
   return loss_sum /= static_cast<double>(inputs.size());
 }
 
 // Update weights.
-void Network::UpdateWeights(const std::vector<VectorXd>& layer_inputs,
-                            const std::vector<VectorXd>& deltas,
+void Network::UpdateWeights(const std::vector<MatrixXd>& derivatives,
                             double step_size) {
-  CHECK(layer_inputs.size() == hidden_layers_.size() + 2);
-  CHECK(deltas.size() == hidden_layers_.size() + 1);
+  CHECK(derivatives.size() == hidden_layers_.size() + 1);
 
   for (size_t ii = 0; ii < hidden_layers_.size(); ii++)
-    hidden_layers_[ii]->UpdateWeights(layer_inputs[ii], deltas[ii], step_size);
+    hidden_layers_[ii]->UpdateWeights(derivatives[ii], step_size);
 
-  output_layer_->UpdateWeights(layer_inputs[hidden_layers_.size()], deltas.back(), step_size);
+  output_layer_->UpdateWeights(derivatives.back(), step_size);
 }
 
 // Forward pass: compute the input of each layer. Last entry is output of final
@@ -227,22 +228,23 @@ double Network::Backward(const VectorXd& ground_truth,
   // Start at the output layer.
   VectorXd gamma(output_layer_->InputSize());
   VectorXd delta(output_layer_->OutputSize());
-  const double loss = output_layer_->Backward(loss_, ground_truth,
-                                              layer_inputs.back(),
-                                              gamma, delta);
+
+  const double loss =
+    output_layer_->Backward(loss_, ground_truth,
+                            layer_inputs.back(), gamma, delta);
   deltas[hidden_layers_.size()] = delta;
 
-  for (size_t ii = 0; ii < hidden_layers_.size(); ii++) {
-    size_t reverse_ii = hidden_layers_.size() - 1 - ii;
-
-    // Propagate derivatives backward.
-    HiddenLayer::ConstPtr layer = hidden_layers_[reverse_ii];
+  // Propagate derivatives backward.
+  for (int ii = hidden_layers_.size() - 1; ii >= 0; ii--) {
+    HiddenLayer::ConstPtr layer = hidden_layers_[ii];
     VectorXd next_gamma(layer->InputSize());
     VectorXd next_delta(layer->OutputSize());
 
-    layer->Backward(layer_inputs[reverse_ii + 1], gamma,
+    layer->Backward(layer_inputs[ii + 1], gamma,
                     next_gamma, next_delta);
-    deltas[reverse_ii] = next_delta;
+    deltas[ii] = next_delta;
+
+    gamma.resize(next_gamma.rows());
     gamma = next_gamma;
   }
 
@@ -253,7 +255,7 @@ double Network::Backward(const VectorXd& ground_truth,
 // Perturb a specific weight.
 void Network::PerturbWeight(size_t layer_number, size_t ii, size_t jj,
                             double amount) {
-  CHECK(layer_number < hidden_layers_.size());
+  CHECK(layer_number <= hidden_layers_.size());
 
   if (layer_number == hidden_layers_.size())
     output_layer_->PerturbWeight(ii, jj, amount);
