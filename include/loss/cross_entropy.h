@@ -47,6 +47,7 @@
 #include <loss/loss_functor.h>
 
 #include <glog/logging.h>
+#include <iostream>
 #include <math.h>
 
 namespace mininet {
@@ -65,45 +66,45 @@ struct CrossEntropy : public LossFunctor {
     // Check that 'ground truth' and 'values' are probability distributions
     // on equal-sized alphabets.
     if (ground_truth.rows() != values.rows()) {
-      VLOG(1) << "Ground truth and values are not the same length.";
+      LOG(WARNING) << "Ground truth and values are not the same length.";
       return false;
     }
 
-    if (ground_truth.sum() < 1.0 - 1e-16 || ground_truth.sum() > 1.0 + 1e-16) {
-      VLOG(1) << "Ground truth vector does not sum to unity.";
+    if (ground_truth.sum() < 1.0 - 1e-8 || ground_truth.sum() > 1.0 + 1e-8) {
+      LOG(WARNING) << "Ground truth vector does not sum to unity.";
       return false;
     }
 
-    if (values.sum() < 1.0 - 1e-16 || values.sum() > 1.0 + 1e-16) {
-      VLOG(1) << "Values vector does not sum to unity.";
+    if (values.sum() < 1.0 - 1e-8 || values.sum() > 1.0 + 1e-8) {
+      LOG(WARNING) << "Values vector does not sum to unity.";
       return false;
     }
 
     if (ground_truth.minCoeff() < 0.0) {
-      VLOG(1) << "Ground truth vector contains a number less than 0.0.";
+      LOG(WARNING) << "Ground truth vector contains a number less than 0.0.";
       return false;
     }
 
     if (ground_truth.maxCoeff() > 1.0) {
-      VLOG(1) << "Ground truth vector contains a number greater than 1.0.";
+      LOG(WARNING) << "Ground truth vector contains a number greater than 1.0.";
       return false;
     }
 
     if (values.minCoeff() < 0.0) {
-      VLOG(1) << "Values vector contains a number less than 0.0.";
+      LOG(WARNING) << "Values vector contains a number less than 0.0.";
       return false;
     }
 
     if (values.maxCoeff() > 1.0) {
-      VLOG(1) << "Values vector contains a number greater than 1.0.";
+      LOG(WARNING) << "Values vector contains a number greater than 1.0.";
       return false;
     }
 
     // Compute the loss and gradient.
     loss = 0.0;
     for (size_t ii = 0; ii < ground_truth.rows(); ii++) {
-      loss -= ground_truth(ii) * std::log(values(ii));
-      gradient(ii) = -ground_truth(ii) / values(ii);
+      loss -= ground_truth(ii) * std::log(std::max(values(ii), 1e-4));
+      gradient(ii) = -ground_truth(ii) / std::max(values(ii), 1e-4);
     }
 
     return true;

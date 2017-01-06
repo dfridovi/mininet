@@ -108,8 +108,6 @@ TEST(ReLU, TestSingleLayer) {
       kInversePerturbation * (perturbed_loss - empirical_loss);
     net.PerturbWeight(0, ii, jj, -kPerturbation);
 
-    std::cout << numerical_derivative << std::endl;
-
     // Compute derivative using backprop.
     const double backprop_derivative = (jj == kNumInputs1) ?
       deltas[0](ii) : layer_inputs[0](jj) * deltas[0](ii);

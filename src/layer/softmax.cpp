@@ -67,10 +67,11 @@ void Softmax::Forward(const VectorXd& input, VectorXd& output) const {
   // Compute linear transformation with bias.
   output = weights_.leftCols(input.rows()) * input + weights_.rightCols(1);
 
-  // Compute non-linearity.
+  // Compute non-linearity, with shift for numerical stability.
+  const double max_output = output.maxCoeff();
   double sum = 0.0;
   for (size_t ii = 0; ii < input.rows(); ii++) {
-    output(ii) = std::exp(output(ii));
+    output(ii) = std::exp(output(ii) - max_output);
     sum += output(ii);
   }
 
