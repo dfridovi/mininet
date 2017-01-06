@@ -56,13 +56,13 @@ using namespace mininet;
 
 // Single layer test.
 TEST(ReLU, TestSingleLayer) {
-  const size_t kNumInputs1 = 5;
-  const size_t kNumInputs2 = 5;
-  const size_t kNumOutputs = 5;
-  const size_t kNumChecks = 5;
-  const double kPerturbation = 1e-5;
-  const double kInversePerturbation = 1e5;
-  const double kEpsilon = 1e-8;
+  const size_t kNumInputs1 = 100;
+  const size_t kNumInputs2 = 100;
+  const size_t kNumOutputs = 10;
+  const size_t kNumChecks = 100;
+  const double kPerturbation = 1e-8;
+  const double kInversePerturbation = 1e8;
+  const double kEpsilon = 1e-6;
 
   // Create a network.
   std::vector<LayerParams> params;
@@ -94,11 +94,13 @@ TEST(ReLU, TestSingleLayer) {
   // For a bunch of random weights, compute the derivative two ways:
   // (1) with the 'derivatives' computed above, and
   // (2) with numerical differentiation.
-  std::uniform_int_distribution<size_t> input_id(0, kNumInputs2); //(0, kNumInputs1);
-  std::uniform_int_distribution<size_t> output_id(0, kNumOutputs - 1); //(0, kNumInputs2 - 1);
+
+  // Output layer check.
+  std::uniform_int_distribution<size_t> output_jj(0, kNumInputs2);
+  std::uniform_int_distribution<size_t> output_ii(0, kNumOutputs - 1);
   for (size_t kk = 0; kk < kNumChecks; kk++) {
-    const size_t jj = input_id(rng);
-    const size_t ii = output_id(rng);
+    const size_t jj = output_jj(rng);
+    const size_t ii = output_ii(rng);
 
     // Compute derivative with a symmetric difference.
     net.PerturbWeight(1, ii, jj, kPerturbation);
@@ -107,15 +109,41 @@ TEST(ReLU, TestSingleLayer) {
     net.PerturbWeight(1, ii, jj, -2.0 * kPerturbation);
     const double backward_loss = net.Loss(batch, ground_truth);
 
-    std::cout << "forward loss = " << forward_loss << ", backward loss = "
-              << backward_loss << std::endl;
-
     const double numerical_derivative =
       0.5 * kInversePerturbation * (forward_loss - backward_loss);
     net.PerturbWeight(1, ii, jj, kPerturbation);
 
     // Compute derivative using backprop.
     const double backprop_derivative = derivatives[1](ii, jj);
+
+    // Make sure they are close.
+    EXPECT_NEAR(numerical_derivative, backprop_derivative, kEpsilon);
+  }
+
+  // Hidden layer check.
+  std::uniform_int_distribution<size_t> hidden_jj(0, kNumInputs1);
+  std::uniform_int_distribution<size_t> hidden_ii(0, kNumInputs2 - 1);
+  for (size_t kk = 0; kk < kNumChecks; kk++) {
+    const size_t jj = hidden_jj(rng);
+    const size_t ii = hidden_ii(rng);
+
+    // Compute derivative with a symmetric difference.
+    net.PerturbWeight(0, ii, jj, kPerturbation);
+    const double forward_loss = net.Loss(batch, ground_truth);
+
+    net.PerturbWeight(0, ii, jj, -2.0 * kPerturbation);
+    const double backward_loss = net.Loss(batch, ground_truth);
+
+    const double numerical_derivative =
+      0.5 * kInversePerturbation * (forward_loss - backward_loss);
+    net.PerturbWeight(0, ii, jj, kPerturbation);
+
+    // Compute derivative using backprop.
+    const double backprop_derivative = derivatives[0](ii, jj);
+
+    // Filter out cases where either derivative is exactly 0.0.
+    if (numerical_derivative == 0.0 || backprop_derivative == 0.0)
+      continue;
 
     // Make sure they are close.
     EXPECT_NEAR(numerical_derivative, backprop_derivative, kEpsilon);

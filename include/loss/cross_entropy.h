@@ -63,6 +63,8 @@ struct CrossEntropy : public LossFunctor {
   // the input 'values' (which are the output of some 'OutputLayer').
   bool Evaluate(const VectorXd& ground_truth, const VectorXd& values,
                 double& loss, VectorXd& gradient) const {
+    const double kEpsilon = 1e-4;
+
     // Check that 'ground truth' and 'values' are probability distributions
     // on equal-sized alphabets.
     if (ground_truth.rows() != values.rows()) {
@@ -70,34 +72,35 @@ struct CrossEntropy : public LossFunctor {
       return false;
     }
 
-    if (ground_truth.sum() < 1.0 - 1e-4 || ground_truth.sum() > 1.0 + 1e-4) {
+    if (ground_truth.sum() < 1.0 - kEpsilon ||
+        ground_truth.sum() > 1.0 + kEpsilon) {
       LOG(WARNING) << "Ground truth vector does not sum to unity ("
                    << ground_truth.sum() << ").";
       return false;
     }
 
-    if (values.sum() < 1.0 - 1e-4 || values.sum() > 1.0 + 1e-4) {
+    if (values.sum() < 1.0 - kEpsilon || values.sum() > 1.0 + kEpsilon) {
       LOG(WARNING) << "Values vector does not sum to unity (" << values.sum()
                    << ").";
       return false;
     }
 
-    if (ground_truth.minCoeff() < -1e-4) {
+    if (ground_truth.minCoeff() < -kEpsilon) {
       LOG(WARNING) << "Ground truth vector contains a number less than 0.0.";
       return false;
     }
 
-    if (ground_truth.maxCoeff() > 1.0 + 1e-4) {
+    if (ground_truth.maxCoeff() > 1.0 + kEpsilon) {
       LOG(WARNING) << "Ground truth vector contains a number greater than 1.0.";
       return false;
     }
 
-    if (values.minCoeff() < -1e-4) {
+    if (values.minCoeff() < -kEpsilon) {
       LOG(WARNING) << "Values vector contains a number less than 0.0.";
       return false;
     }
 
-    if (values.maxCoeff() > 1.0 + 1e-4) {
+    if (values.maxCoeff() > 1.0 + kEpsilon) {
       LOG(WARNING) << "Values vector contains a number greater than 1.0.";
       return false;
     }
@@ -105,10 +108,10 @@ struct CrossEntropy : public LossFunctor {
     // Compute the loss and gradient.
     loss = 0.0;
     for (size_t ii = 0; ii < ground_truth.rows(); ii++) {
-      loss -= ground_truth(ii) * std::log(std::max(values(ii), 1e-4));
+      loss -= ground_truth(ii) * std::log(std::max(values(ii), kEpsilon));
 
       // Catch small values(ii).
-      if (values(ii) < 1e-4)
+      if (values(ii) < kEpsilon)
         gradient(ii) = 0.0;
       else
         gradient(ii) = -ground_truth(ii) / values(ii);

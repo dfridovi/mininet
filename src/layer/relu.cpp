@@ -83,10 +83,10 @@ void ReLU::Backward(const VectorXd& output, const VectorXd& upstream_gammas,
   // Compute the 'deltas' from the 'upstream gammas' (derivative of ReLU is
   // 0.0 at 0 and 1.0 otherwise).
   for (size_t ii = 0; ii < deltas.rows(); ii++) {
-    if (upstream_gammas(ii) < 1e-16)
+    if (upstream_gammas(ii) <= 1e-8)
       deltas(ii) = 0.0;
     else
-      deltas(ii) = 1.0;
+      deltas(ii) = upstream_gammas(ii);
   }
 
   // Compute the associated 'gammas'.
