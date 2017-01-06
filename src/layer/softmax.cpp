@@ -70,7 +70,7 @@ void Softmax::Forward(const VectorXd& input, VectorXd& output) const {
   // Compute non-linearity.
   double sum = 0.0;
   for (size_t ii = 0; ii < input.rows(); ii++) {
-    output(ii) = exp(output(ii));
+    output(ii) = std::exp(output(ii));
     sum += output(ii);
   }
 

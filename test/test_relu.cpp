@@ -56,10 +56,10 @@ using namespace mininet;
 
 // Single layer test.
 TEST(ReLU, TestSingleLayer) {
-  const size_t kNumInputs1 = 1;
-  const size_t kNumInputs2 = 2;
-  const size_t kNumOutputs = 2;
-  const size_t kNumChecks = 1;
+  const size_t kNumInputs1 = 5;
+  const size_t kNumInputs2 = 5;
+  const size_t kNumOutputs = 5;
+  const size_t kNumChecks = 10;
   const double kPerturbation = 1e-4;
   const double kInversePerturbation = 1e4;
   const double kEpsilon = 1e-8;
@@ -107,6 +107,8 @@ TEST(ReLU, TestSingleLayer) {
     const double numerical_derivative =
       kInversePerturbation * (perturbed_loss - empirical_loss);
     net.PerturbWeight(0, ii, jj, -kPerturbation);
+
+    std::cout << numerical_derivative << std::endl;
 
     // Compute derivative using backprop.
     const double backprop_derivative = (jj == kNumInputs1) ?

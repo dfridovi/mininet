@@ -102,7 +102,7 @@ struct CrossEntropy : public LossFunctor {
     // Compute the loss and gradient.
     loss = 0.0;
     for (size_t ii = 0; ii < ground_truth.rows(); ii++) {
-      loss -= ground_truth(ii) * log(values(ii));
+      loss -= ground_truth(ii) * std::log(values(ii));
       gradient(ii) = -ground_truth(ii) / values(ii);
     }
 
