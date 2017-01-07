@@ -56,10 +56,10 @@ using namespace mininet;
 
 // Single layer test.
 TEST(ReLU, TestSingleLayer) {
-  const size_t kNumInputs1 = 100;
-  const size_t kNumInputs2 = 100;
-  const size_t kNumOutputs = 10;
-  const size_t kNumChecks = 100;
+  const size_t kNumInputs1 = 5;
+  const size_t kNumInputs2 = 5;
+  const size_t kNumOutputs = 3;
+  const size_t kNumChecks = 10;
   const double kPerturbation = 1e-8;
   const double kInversePerturbation = 1e8;
   const double kEpsilon = 1e-6;
@@ -141,9 +141,11 @@ TEST(ReLU, TestSingleLayer) {
     // Compute derivative using backprop.
     const double backprop_derivative = derivatives[0](ii, jj);
 
+#if 0
     // Filter out cases where either derivative is exactly 0.0.
     if (numerical_derivative == 0.0 || backprop_derivative == 0.0)
       continue;
+#endif
 
     // Make sure they are close.
     EXPECT_NEAR(numerical_derivative, backprop_derivative, kEpsilon);

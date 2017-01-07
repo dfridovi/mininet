@@ -62,7 +62,7 @@ Network::Network(std::vector<LayerParams> params,
       layer = ReLU::Create(params[ii].input_size_, params[ii].output_size_);
       break;
     default:
-      VLOG(1) << "Invalid hidden layer type. Using ReLU instead.";
+      LOG(WARNING) << "Invalid hidden layer type. Using ReLU instead.";
       layer = ReLU::Create(params[ii].input_size_, params[ii].output_size_);
       break;
     }
@@ -82,7 +82,7 @@ Network::Network(std::vector<LayerParams> params,
                                     params.back().output_size_);
     break;
   default:
-    VLOG(1) << "Invalid output layer type. Using softmax instead.";
+    LOG(WARNING) << "Invalid output layer type. Using softmax instead.";
     output_layer_ = Softmax::Create(params.back().input_size_,
                                     params.back().output_size_);
     break;
