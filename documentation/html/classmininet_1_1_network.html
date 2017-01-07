@@ -82,12 +82,15 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>operator()</b> (const
 <tr class="memitem:ae76628cf7258aa0b8d0ee147e580623e"><td class="memItemLeft" align="right" valign="top"><a id="ae76628cf7258aa0b8d0ee147e580623e"></a>
 double&#160;</td><td class="memItemRight" valign="bottom"><b>Loss</b> (const std::vector&lt; VectorXd &gt; &amp;inputs, const std::vector&lt; VectorXd &gt; &amp;ground_truths) const</td></tr>
 <tr class="separator:ae76628cf7258aa0b8d0ee147e580623e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abc9f2dbdbc85532cb2758f6877d4d292"><td class="memItemLeft" align="right" valign="top"><a id="abc9f2dbdbc85532cb2758f6877d4d292"></a>
-double&#160;</td><td class="memItemRight" valign="bottom"><b>RunBatch</b> (const std::vector&lt; VectorXd &gt; &amp;batch, const std::vector&lt; VectorXd &gt; &amp;ground_truth, std::vector&lt; VectorXd &gt; &amp;layer_inputs_avg, std::vector&lt; VectorXd &gt; &amp;deltas_avg) const</td></tr>
-<tr class="separator:abc9f2dbdbc85532cb2758f6877d4d292"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a96c186885b661e8dcdef8e7a04e06528"><td class="memItemLeft" align="right" valign="top"><a id="a96c186885b661e8dcdef8e7a04e06528"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>UpdateWeights</b> (const std::vector&lt; VectorXd &gt; &amp;layer_inputs, const std::vector&lt; VectorXd &gt; &amp;deltas, double step_size)</td></tr>
-<tr class="separator:a96c186885b661e8dcdef8e7a04e06528"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a52d7bf3f7a6ff4ca2d2fe93758b48cc0"><td class="memItemLeft" align="right" valign="top"><a id="a52d7bf3f7a6ff4ca2d2fe93758b48cc0"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>RunBatch</b> (const std::vector&lt; VectorXd &gt; &amp;batch, const std::vector&lt; VectorXd &gt; &amp;ground_truth, std::vector&lt; MatrixXd &gt; &amp;derivatives) const</td></tr>
+<tr class="separator:a52d7bf3f7a6ff4ca2d2fe93758b48cc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09c5c7f9617732fa35308e0218e06ec8"><td class="memItemLeft" align="right" valign="top"><a id="a09c5c7f9617732fa35308e0218e06ec8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>UpdateWeights</b> (const std::vector&lt; MatrixXd &gt; &amp;derivatives, double step_size)</td></tr>
+<tr class="separator:a09c5c7f9617732fa35308e0218e06ec8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3b1a8593348f1e0aa1a4a1457d3d6ab2"><td class="memItemLeft" align="right" valign="top"><a id="a3b1a8593348f1e0aa1a4a1457d3d6ab2"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>PerturbWeight</b> (size_t layer_number, size_t ii, size_t jj, double amount)</td></tr>
+<tr class="separator:a3b1a8593348f1e0aa1a4a1457d3d6ab2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
