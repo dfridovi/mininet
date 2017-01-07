@@ -141,12 +141,6 @@ TEST(ReLU, TestSingleLayer) {
     // Compute derivative using backprop.
     const double backprop_derivative = derivatives[0](ii, jj);
 
-#if 0
-    // Filter out cases where either derivative is exactly 0.0.
-    if (numerical_derivative == 0.0 || backprop_derivative == 0.0)
-      continue;
-#endif
-
     // Make sure they are close.
     EXPECT_NEAR(numerical_derivative, backprop_derivative, kEpsilon);
   }
