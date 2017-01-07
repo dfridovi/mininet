@@ -77,6 +77,13 @@ void BackpropTrainer::Train() {
     // Print a message.
     std::printf("Epoch %zu: loss = %f\n", ii, loss);
 
+    // Break out if loss is sufficiently small.
+    if (loss < params_.max_avg_loss_) {
+      std::printf("Current loss is smaller than the threshold: %f < %f.\n",
+                  loss, params_.max_avg_loss_);
+      break;
+    }
+
     // Update learning rate.
     learning_rate *= params_.learning_rate_decay_;
   }

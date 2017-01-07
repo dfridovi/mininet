@@ -49,6 +49,9 @@
 namespace mininet {
 
 struct BackpropParams {
+  // Maximum allowable average loss for a batch. Used as a stopping criterion.
+  double max_avg_loss_ = 1e-4;
+
   // Batch size. Amount of data to be used in each SGD iteration.
   size_t batch_size_ = 20;
 
