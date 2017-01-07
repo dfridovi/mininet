@@ -1,0 +1,51 @@
+\hypertarget{classmininet_1_1_layer}{}\section{mininet\+:\+:Layer Class Reference}
+\label{classmininet_1_1_layer}\index{mininet\+::\+Layer@{mininet\+::\+Layer}}
+Inheritance diagram for mininet\+:\+:Layer\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=3.000000cm]{classmininet_1_1_layer}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classmininet_1_1_layer_aed25482510bfaf3ca2fbea9897ddb352}{}\label{classmininet_1_1_layer_aed25482510bfaf3ca2fbea9897ddb352} 
+{\bfseries Layer} (size\+\_\+t input\+\_\+size, size\+\_\+t output\+\_\+size)
+\item 
+\hypertarget{classmininet_1_1_layer_a1e4d5bfdc7e78035d185e4a1a690d53b}{}\label{classmininet_1_1_layer_a1e4d5bfdc7e78035d185e4a1a690d53b} 
+size\+\_\+t {\bfseries Input\+Size} () const
+\item 
+\hypertarget{classmininet_1_1_layer_a57a99b9937ce76a1a6e57903f308aba4}{}\label{classmininet_1_1_layer_a57a99b9937ce76a1a6e57903f308aba4} 
+size\+\_\+t {\bfseries Output\+Size} () const
+\item 
+\hypertarget{classmininet_1_1_layer_a294ed3ba99229b383cf0486a5bbc67bb}{}\label{classmininet_1_1_layer_a294ed3ba99229b383cf0486a5bbc67bb} 
+const Matrix\+Xd \& {\bfseries Immutable\+Weights} () const
+\item 
+\hypertarget{classmininet_1_1_layer_ad00a16de27c913f9a08860c9f623e3cf}{}\label{classmininet_1_1_layer_ad00a16de27c913f9a08860c9f623e3cf} 
+void {\bfseries Update\+Weights} (const Matrix\+Xd \&derivatives, double step\+\_\+size)
+\item 
+\hypertarget{classmininet_1_1_layer_a20738f447572a1fa759decae8913814f}{}\label{classmininet_1_1_layer_a20738f447572a1fa759decae8913814f} 
+void {\bfseries Perturb\+Weight} (size\+\_\+t ii, size\+\_\+t jj, double amount)
+\item 
+\hypertarget{classmininet_1_1_layer_a933df55c92eb813d3e69e9ecfa42dfa6}{}\label{classmininet_1_1_layer_a933df55c92eb813d3e69e9ecfa42dfa6} 
+virtual void {\bfseries Forward} (const Vector\+Xd \&input, Vector\+Xd \&output) const =0
+\end{DoxyCompactItemize}
+\subsection*{Protected Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classmininet_1_1_layer_a9be2fab58f1a70c74b84c6fed4eac6c9}{}\label{classmininet_1_1_layer_a9be2fab58f1a70c74b84c6fed4eac6c9} 
+Matrix\+Xd {\bfseries weights\+\_\+}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+
+
+Definition at line 53 of file layer.\+h.
+
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/\+Users/davidfridovichkeil/\+Documents/\+Developer/mininet/include/layer/layer.\+h\item 
+/\+Users/davidfridovichkeil/\+Documents/\+Developer/mininet/src/layer/layer.\+cpp\end{DoxyCompactItemize}
