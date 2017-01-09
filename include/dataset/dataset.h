@@ -57,6 +57,10 @@ public:
   explicit Dataset(const std::vector<VectorXd>& inputs,
                    const std::vector<VectorXd>& outputs,
                    double training_fraction = 0.75);
+  explicit Dataset(const std::vector<VectorXd>& training_inputs,
+                   const std::vector<VectorXd>& training_outputs,
+                   const std::vector<VectorXd>& testing_inputs,
+                   const std::vector<VectorXd>& testing_outputs);
   ~Dataset();
 
   // Get a random sample from the training set. Returns false if there are not

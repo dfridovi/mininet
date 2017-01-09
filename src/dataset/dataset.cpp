@@ -44,10 +44,20 @@
 #include <dataset/dataset.h>
 
 #include <glog/logging.h>
+#include <unordered_set>
 
 namespace mininet {
 
 Dataset::~Dataset() {}
+Dataset::Dataset(const std::vector<VectorXd>& training_inputs,
+                 const std::vector<VectorXd>& training_outputs,
+                 const std::vector<VectorXd>& testing_inputs,
+                 const std::vector<VectorXd>& testing_outputs)
+  : training_inputs_(training_inputs),
+    training_outputs_(training_outputs),
+    testing_inputs_(testing_inputs),
+    testing_outputs_(testing_outputs) {}
+
 Dataset::Dataset(const std::vector<VectorXd>& inputs,
                  const std::vector<VectorXd>& outputs,
                  double training_fraction) {
@@ -85,28 +95,53 @@ bool Dataset::Batch(size_t batch_size, std::vector<VectorXd>& input_samples,
   input_samples.clear();
   output_samples.clear();
 
+  size_t thresholded_batch_size = batch_size;
+
   // Check that batch size is smaller than training set.
-  if (batch_size >= training_inputs_.size()) {
+  if (thresholded_batch_size > training_inputs_.size()) {
     VLOG(1) << "Batch size is larger than training set. Returning entire"
             << " training set.";
-    batch_size = training_inputs_.size();
+    thresholded_batch_size = training_inputs_.size();
   }
 
   // Random number generation.
   std::random_device rd;
   std::default_random_engine rng(rd());
 
-  // Generate a random subset of the training data.
-  std::vector<size_t> indices(training_inputs_.size());
-  std::iota(indices.begin(), indices.end(), 0);
-  std::shuffle(indices.begin(), indices.end(), rng);
+  // Generate a random subset of the training data one of two ways:
+  // (1) if batch size / training size >= 1 - 1/e, randomly shuffle,
+  // (2) otherwise, draw random indices and check if they've been drawn.
+  if (static_cast<double>(thresholded_batch_size) / training_inputs_.size() >=
+      1.0 - 1.0 / M_E) {
+    // (1) If batch size is large, do a random shuffle.
+    std::vector<size_t> indices(training_inputs_.size());
+    std::iota(indices.begin(), indices.end(), 0);
+    std::shuffle(indices.begin(), indices.end(), rng);
 
-  for (size_t ii = 0; ii < batch_size; ii++) {
-    input_samples.push_back(training_inputs_[ indices[ii] ]);
-    output_samples.push_back(training_outputs_[ indices[ii] ]);
+    for (size_t ii = 0; ii < thresholded_batch_size; ii++) {
+      input_samples.push_back(training_inputs_[ indices[ii] ]);
+      output_samples.push_back(training_outputs_[ indices[ii] ]);
+    }
+  } else {
+    // (2) Batch size is small, so choose random indices.
+    std::uniform_int_distribution<size_t> unif(0, training_inputs_.size() - 1);
+    std::unordered_set<size_t> sampled_indices;
+
+    while (input_samples.size() < thresholded_batch_size) {
+      // Pick a random index in the training set that we have not seen yet.
+      const size_t ii = unif(rng);
+      if (sampled_indices.count(ii) > 0)
+        continue;
+
+      sampled_indices.insert(ii);
+
+      // Insert the corresponding samples.
+      input_samples.push_back(training_inputs_[ii]);
+      output_samples.push_back(training_outputs_[ii]);
+    }
   }
 
-  return input_samples.size() < training_inputs_.size();
+  return input_samples.size() < batch_size;
 }
 
 // Get a const reference to the testing set.
