@@ -15,6 +15,8 @@ if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   add_definitions(-DSYSTEM_LINUX)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
+add_definitions(-DMININET_DATA_DIR="${CMAKE_SOURCE_DIR}/data/")
+
 # Add cmake modules.
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/Modules)
 message("Cmake module path: ${CMAKE_MODULE_PATH}")
