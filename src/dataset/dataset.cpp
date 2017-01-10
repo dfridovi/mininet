@@ -53,26 +53,24 @@ Dataset::Dataset(const std::vector<VectorXd>& training_inputs,
                  const std::vector<VectorXd>& training_outputs,
                  const std::vector<VectorXd>& testing_inputs,
                  const std::vector<VectorXd>& testing_outputs,
-                 bool normalize = true)
+                 bool normalize)
   : training_inputs_(training_inputs),
     training_outputs_(training_outputs),
     testing_inputs_(testing_inputs),
     testing_outputs_(testing_outputs) {
-  CHECK(training_inputs_.size() == training_outputs_.size());
-  CHECK(testing_inputs_.size() ==  testing_outputs_.size());
+  CHECK_EQ(training_inputs_.size(), training_outputs_.size());
+  CHECK_EQ(testing_inputs_.size(),  testing_outputs_.size());
   CHECK(training_inputs_.size() > 0 && testing_inputs_.size() > 0);
 
-  // Normalize each entry of the training data.
-  for (size_t ii = 0; ii < training_inputs_[0].rows(); ii++) {
-    for (size_t jj = 0; jj < training_inputs_.size(); jj++) {
-
-    }
+  if (normalize) {
+    Normalize(training_inputs_);
+    Normalize(testing_inputs_);
   }
 }
 
 Dataset::Dataset(const std::vector<VectorXd>& inputs,
                  const std::vector<VectorXd>& outputs,
-                 double training_fraction) {
+                 double training_fraction, bool normalize) {
   CHECK(inputs.size() == outputs.size());
   CHECK(training_fraction >= 0.0 && training_fraction <= 1.0);
   CHECK(inputs.size() > 0 && training_fraction * inputs.size() > 0.5);
@@ -99,6 +97,50 @@ Dataset::Dataset(const std::vector<VectorXd>& inputs,
     testing_inputs_.push_back(inputs[ indices[ii] ]);
     testing_outputs_.push_back(outputs[ indices[ii] ]);
   }
+
+  if (normalize) {
+    Normalize(training_inputs_);
+    Normalize(testing_inputs_);
+  }
+}
+
+// Normalize a set of vectors, so that across all vectors each entry is zero
+// mean and variance one.
+void Dataset::Normalize(std::vector<VectorXd>& data) {
+  if (data.size() <= 1) {
+    LOG(WARNING) << "Tried to normalize a dataset of size 0 or 1.";
+    return;
+  }
+
+  // Extract data dimension.
+  const size_t dimension = data[0].rows();
+
+  for (size_t ii = 0; ii < dimension; ii++) {
+    double sum = 0.0;
+    double sum_squares = 0.0;
+
+    for (const auto& x : data) {
+      // Assume all data has the correct dimension for speed.
+      sum += x(ii);
+      sum_squares += x(ii) * x(ii);
+    }
+
+    const double mean = sum / data.size();
+    const double second_moment = sum_squares / data.size();
+    const double stddev = std::sqrt(second_moment - mean * mean);
+
+    if (stddev < 1e-8) {
+      LOG(WARNING) << "Encountered a dimension of all zeros.";
+      continue;
+    }
+
+    const double inv_stddev = 1.0 / stddev;
+
+    // Loop back through the data and normalize this dimension.
+    for (auto& x : data)
+      x(ii) = (x(ii) - mean) * inv_stddev;
+  }
+
 }
 
 // Get a random sample from the training set. Returns false if there are not

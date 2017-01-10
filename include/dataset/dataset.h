@@ -75,6 +75,10 @@ public:
   const std::vector<VectorXd>& TestingOutputs() const;
 
 private:
+  // Normalize a set of vectors, so that across all vectors each entry is zero
+  // mean and variance one.
+  void Normalize(std::vector<VectorXd>& data);
+
   // Training and testing sets.
   std::vector<VectorXd> training_inputs_;
   std::vector<VectorXd> training_outputs_;

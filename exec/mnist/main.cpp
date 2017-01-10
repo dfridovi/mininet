@@ -54,7 +54,7 @@
 #include <vector>
 #include <random>
 #include <iostream>
-#include <ifstream>
+#include <fstream>
 #include <string>
 #include <math.h>
 
@@ -87,27 +87,57 @@ int main(int argc, char** argv) {
   CHECK(FLAGS_num_hidden_layers > 0);
 
   // Load the dataset.
-  std::vector<VectorXd> inputs, outputs;
+  std::cout << "Loading the dataset..." << std::flush;
 
+  std::vector<VectorXd> inputs, outputs;
   std::ifstream file(MININET_DATA_DIR + FLAGS_data_file);
-  std::string value;
 
   int label = -1;
   size_t position;
   std::vector<int> line;
   while (file.good()) {
+    line.clear();
+
     // Get label.
-    std::getline(file, value, ',');
-    label = std::stoi(value);
+    std::string label_string;
+    std::getline(file, label_string, ',');
+    try {
+      label = std::stoi(label_string);
+    } catch (...) {
+      LOG(WARNING) << "Error parsing a label. String was: " << label_string;
+      label = 0;
+    }
     CHECK(label >= 0 && label <= 9);
 
     // Parse the rest of the line.
-    std::getline(file, value);
-    while ((position = value.find(',')) != std::string::npos) {
-      std::string field = value.substr(0, position);
-      value = value.substr(position + 1);
-      line.push_back(std::stoi(field));
+    std::string data_string;
+    std::getline(file, data_string);
+    while ((position = data_string.find(',')) != std::string::npos) {
+      std::string field = data_string.substr(0, position);
+      data_string = data_string.substr(position + 1);
+
+      try {
+        line.push_back(std::stoi(field));
+      } catch (...) {
+        LOG(WARNING) << "Error parsing data field. String was: " << field;
+        line.push_back(0);
+      }
+
     }
+
+    // Catch remaining characters.
+    if (data_string.length() > 0) {
+      try {
+        line.push_back(std::stoi(data_string));
+      } catch (...) {
+        LOG(WARNING) << "Error parsing data field. String was: " << data_string;
+        line.push_back(0);
+      }
+    }
+
+    // Catch empty line.
+    if (line.size() == 0)
+      continue;
 
     // Parse label and line into VectorXd's.
     VectorXd output = VectorXd::Zero(10);
@@ -119,16 +149,20 @@ int main(int argc, char** argv) {
 
     // Check that the input size matches the previous line.
     if (inputs.size() > 0)
-      CHECK(inputs.back().rows() == input.rows());
+      CHECK_EQ(inputs.back().rows(), input.rows());
 
     // Insert into inputs and outputs.
     outputs.push_back(output);
-    inputs.push_back(inputs);
+    inputs.push_back(input);
   }
 
+  file.close();
   Dataset dataset(inputs, outputs, FLAGS_training_fraction);
 
+  std::cout << "done. Found " << inputs.size() << " data points." << std::endl;
+
   // Set up the network.
+  std::cout << "Setting up the network..." << std::flush;
   std::vector<LayerParams> layer_params;
   layer_params.push_back(LayerParams(RELU, inputs[0].rows(),
                                      FLAGS_hidden_layer_size));
@@ -141,6 +175,8 @@ int main(int argc, char** argv) {
 
   const LossFunctor::ConstPtr loss = CrossEntropy::Create();
   Network net(layer_params, loss);
+
+  std::cout << "done." << std::endl << std::flush;
 
   // Create a trainer.
   BackpropParams backprop_params;
@@ -159,14 +195,6 @@ int main(int argc, char** argv) {
   // Test.
   const double final_loss = trainer.Test();
   std::printf("Final loss was %f.\n", final_loss);
-
-  // Try it on the point (1, 1).
-  const VectorXd test_point = VectorXd::Constant(2, 1.0);
-  VectorXd test_output(4);
-  net(test_point, test_output);
-
-  std::cout << "Classification of (" << test_point.transpose() << ") is: "
-            << test_output.transpose() << std::endl;
 
   return 0;
 }
