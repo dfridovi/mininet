@@ -49,7 +49,8 @@
 namespace mininet {
 
 struct BackpropParams {
-  // Maximum allowable average loss for a batch. Used as a stopping criterion.
+  // Maximum allowable average loss (on the validation set) for a batch.
+  // Used as a stopping criterion.
   double max_avg_loss_ = 1e-4;
 
   // Batch size. Amount of data to be used in each SGD iteration.
@@ -66,6 +67,12 @@ struct BackpropParams {
 
   // Learning rate decay factor (multiply by this each new epoch).
   double learning_rate_decay_ = 0.5;
+
+  // Momentum multiplier.
+  double momentum_ = 0.0;
+
+  // Weight decay rate (L2 regularizer).
+  double weight_decay_ = 0.0;
 }; //\struct BackpropParameters
 
 }  //\namespace mininet

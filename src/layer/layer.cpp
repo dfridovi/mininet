@@ -53,7 +53,8 @@ namespace mininet {
 // input bias term.
 Layer::~Layer() {}
 Layer::Layer(size_t input_size, size_t output_size)
-  : weights_(MatrixXd::Zero(output_size, input_size + 1)) {
+  : weights_(MatrixXd::Zero(output_size, input_size + 1)),
+    weight_changes_(MatrixXd::Zero(output_size, input_size + 1)) {
   // Create a random number generator for a normal distribution of mean
   // 0.0 and standard deviation 0.1.
   std::random_device rd;
@@ -67,17 +68,23 @@ Layer::Layer(size_t input_size, size_t output_size)
 }
 
 // Update weights by gradient descent.
-void Layer::UpdateWeights(const MatrixXd& derivatives, double step_size) {
-  CHECK(derivatives.rows() == weights_.rows());
-  CHECK(derivatives.cols() == weights_.cols());
+// 'learning_rate' multiplies the derivative at each weight,
+// 'momentum' multiplies the previous change in weight, and
+// 'decay' multiplies the current value of the weight (L2 regularization).
+void Layer::UpdateWeights(const MatrixXd& derivatives, double learning_rate,
+                          double momentum, double decay) {
+  CHECK_EQ(derivatives.rows(), weights_.rows());
+  CHECK_EQ(derivatives.cols(), weights_.cols());
 
-  weights_ -= step_size * derivatives;
+  weight_changes_ = -learning_rate * derivatives
+    - decay * weights_ + momentum * weight_changes_;
+  weights_ += weight_changes_;
 }
 
 // Perturb a single weight by a specified amount.
 void Layer::PerturbWeight(size_t ii, size_t jj, double amount) {
-  CHECK(ii < weights_.rows());
-  CHECK(jj < weights_.cols());
+  CHECK_LT(ii, weights_.rows());
+  CHECK_LT(jj, weights_.cols());
 
   weights_(ii, jj) += amount;
 }

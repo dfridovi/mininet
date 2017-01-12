@@ -69,7 +69,7 @@ Network::Network(std::vector<LayerParams> params,
 
     // Make sure its input size matches the previous output size.
     if (ii > 0)
-      CHECK(params[ii].input_size_ == params[ii - 1].output_size_);
+      CHECK_EQ(params[ii].input_size_, params[ii - 1].output_size_);
 
     // Add to list.
     hidden_layers_.push_back(layer);
@@ -90,13 +90,13 @@ Network::Network(std::vector<LayerParams> params,
 
   // Make sure its input size matches the previous output size.
   if (params.size() > 1)
-    CHECK(params.back().input_size_ == params[params.size() - 2].output_size_);
+    CHECK_EQ(params.back().input_size_, params[params.size() - 2].output_size_);
 }
 
 // Treat the network as a functor. Computes the output of the net.
 void Network::operator()(const VectorXd& input, VectorXd& output) const {
-  CHECK(input.rows() == hidden_layers_.front()->InputSize());
-  CHECK(output.rows() == output_layer_->OutputSize());
+  CHECK_EQ(input.rows(), hidden_layers_.front()->InputSize());
+  CHECK_EQ(output.rows(), output_layer_->OutputSize());
 
   // Pass through the network.
   VectorXd current_output(input.size());
@@ -116,7 +116,7 @@ void Network::operator()(const VectorXd& input, VectorXd& output) const {
 // Compute average loss on a set of inputs and ground truths.
 double Network::Loss(const std::vector<VectorXd>& inputs,
                      const std::vector<VectorXd>& ground_truths) const {
-  CHECK(inputs.size() == ground_truths.size());
+  CHECK_EQ(inputs.size(), ground_truths.size());
 
   // Forward and backward passes for each element of the inputs.
   double loss_sum = 0.0;
@@ -158,8 +158,8 @@ double Network::RunBatch(const std::vector<VectorXd>& inputs,
     std::vector<VectorXd> deltas;
     loss_sum += Backward(ground_truths[ll], layer_inputs, deltas);
 
-    CHECK(layer_inputs.size() == hidden_layers_.size() + 2);
-    CHECK(deltas.size() == hidden_layers_.size() + 1);
+    CHECK_EQ(layer_inputs.size(), hidden_layers_.size() + 2);
+    CHECK_EQ(deltas.size(), hidden_layers_.size() + 1);
 
     // Compute derivatives with respect to each layer's weights.
     for (size_t kk = 0; kk < hidden_layers_.size() + 1; kk++) {
@@ -182,20 +182,23 @@ double Network::RunBatch(const std::vector<VectorXd>& inputs,
 
 // Update weights.
 void Network::UpdateWeights(const std::vector<MatrixXd>& derivatives,
-                            double step_size) {
-  CHECK(derivatives.size() == hidden_layers_.size() + 1);
+                            double learning_rate, double momentum,
+                            double decay) {
+  CHECK_EQ(derivatives.size(), hidden_layers_.size() + 1);
 
   for (size_t ii = 0; ii < hidden_layers_.size(); ii++)
-    hidden_layers_[ii]->UpdateWeights(derivatives[ii], step_size);
+    hidden_layers_[ii]->UpdateWeights(derivatives[ii], learning_rate,
+                                      momentum, decay);
 
-  output_layer_->UpdateWeights(derivatives.back(), step_size);
+  output_layer_->UpdateWeights(derivatives.back(), learning_rate,
+                               momentum, decay);
 }
 
 // Forward pass: compute the input of each layer. Last entry is output of final
 // layer.
 void Network::Forward(const VectorXd& input,
                       std::vector<VectorXd>& layer_inputs) const {
-  CHECK(input.rows() == hidden_layers_.front()->InputSize());
+  CHECK_EQ(input.rows(), hidden_layers_.front()->InputSize());
   layer_inputs.clear();
 
   // Pass through the network.
@@ -218,8 +221,8 @@ void Network::Forward(const VectorXd& input,
 double Network::Backward(const VectorXd& ground_truth,
                          const std::vector<VectorXd>& layer_inputs,
                          std::vector<VectorXd>& deltas) const {
-  CHECK(ground_truth.rows() == output_layer_->OutputSize());
-  CHECK(layer_inputs.size() == hidden_layers_.size() + 2);
+  CHECK_EQ(ground_truth.rows(), output_layer_->OutputSize());
+  CHECK_EQ(layer_inputs.size(), hidden_layers_.size() + 2);
   deltas.clear();
 
   // Initialize 'deltas' to be the right size.
@@ -255,7 +258,7 @@ double Network::Backward(const VectorXd& ground_truth,
 // Perturb a specific weight.
 void Network::PerturbWeight(size_t layer_number, size_t ii, size_t jj,
                             double amount) {
-  CHECK(layer_number <= hidden_layers_.size());
+  CHECK_LE(layer_number, hidden_layers_.size());
 
   if (layer_number == hidden_layers_.size())
     output_layer_->PerturbWeight(ii, jj, amount);

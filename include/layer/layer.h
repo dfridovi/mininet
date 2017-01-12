@@ -61,8 +61,11 @@ public:
   const MatrixXd& ImmutableWeights() const { return weights_; }
 
   // Update weights by gradient descent.
-  void UpdateWeights(const MatrixXd& derivatives,
-                     double step_size);
+  // 'learning_rate' multiplies the derivative at each weight,
+  // 'momentum' multiplies the previous change in weight, and
+  // 'decay' multiplies the current value of the weight (L2 regularization).
+  void UpdateWeights(const MatrixXd& derivatives, double learning_rate,
+                     double momentum = 0.0, double decay = 0.0);
 
   // Perturb a single weight by a specified amount.
   void PerturbWeight(size_t ii, size_t jj, double amount);
@@ -75,6 +78,9 @@ public:
 protected:
   // Weights from input (with bias) to output.
   MatrixXd weights_;
+
+  // Keep track of changes in weights for use in momentum.
+  MatrixXd weight_changes_;
 
 }; // class Layer
 

@@ -75,7 +75,7 @@ public:
 
   // Update weights.
   void UpdateWeights(const std::vector<MatrixXd>& derivatives,
-                     double step_size);
+                     double learning_rate, double momentum, double decay);
 
   // Perturb a specific weight.
   void PerturbWeight(size_t layer_number, size_t ii, size_t jj, double amount);

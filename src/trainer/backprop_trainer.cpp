@@ -71,7 +71,8 @@ double BackpropTrainer::Train() {
       loss = network_.RunBatch(input_samples, output_samples, derivatives);
 
       // Update weights.
-      network_.UpdateWeights(derivatives, learning_rate);
+      network_.UpdateWeights(derivatives, learning_rate,
+                             params_.momentum_, params_.weight_decay_);
     }
 
     // Evaluate on validation set.

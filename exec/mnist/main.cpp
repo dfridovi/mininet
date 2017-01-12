@@ -70,11 +70,13 @@ DEFINE_string(data_file, "mnist.csv",
 
 // Training parameters.
 DEFINE_double(max_avg_loss, 1e-4, "Maximum allowable mean loss for a batch.");
-DEFINE_int32(batch_size, 20, "Amount of data to be used per SGD iteration.");
+DEFINE_int32(batch_size, 50, "Amount of data to be used per SGD iteration.");
 DEFINE_int32(num_iters_per_epoch, 1000, "Number of iterations per epoch.");
 DEFINE_int32(num_epochs, 10, "Number of epochs to run SGD.");
 DEFINE_double(learning_rate, 0.2, "Initial learning rate.");
 DEFINE_double(learning_rate_decay, 0.5, "Learning rate decay factor.");
+DEFINE_double(momentum, 0.001, "Momentum multiplier.");
+DEFINE_double(weight_decay, 0.001, "L2 penalty on weight size.");
 
 using namespace mininet;
 
@@ -186,6 +188,8 @@ int main(int argc, char** argv) {
   backprop_params.num_epochs_ = FLAGS_num_epochs;
   backprop_params.learning_rate_ = FLAGS_learning_rate;
   backprop_params.learning_rate_decay_ = FLAGS_learning_rate_decay;
+  backprop_params.momentum_ = FLAGS_momentum;
+  backprop_params.weight_decay_ = FLAGS_weight_decay;
 
   BackpropTrainer trainer(net, dataset, backprop_params);
 
