@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/dfridovi/mininet.svg?branch=master)](https://travis-ci.org/dfridovi/mininet)
 [![License](https://img.shields.io/badge/license-BSD-blue.svg)](https://github.com/dfridovi/mininet/blob/master/LICENSE)
 
-A lightweight C++ framework for deep learning. **mininet** is written by [David Fridovich-Keil](http://people.eecs.berkeley.edu/~dfk/), a second-year PhD student in the [Berkeley Artificial Intelligence Research (BAIR) Lab](http://bair.berkeley.edu), and Sara Fridovich-Keil, a junior electrical engineering student student at Princeton.
+A lightweight C++ framework for deep learning. **mininet** is written by [David Fridovich-Keil](http://people.eecs.berkeley.edu/~dfk/), a second-year PhD student in the [Berkeley Artificial Intelligence Research (BAIR) Lab](http://bair.berkeley.edu), and Sara Fridovich-Keil, a junior electrical engineering student at Princeton.
 
 ## Status
 **mininet** is still under active development. We hope to have a first release soon though, so stay tuned!
