@@ -55,7 +55,7 @@ BackpropTrainer::BackpropTrainer(const Network& network, const Dataset& dataset,
     params_(params) {}
 
 // All trainers must implement this interface.
-void BackpropTrainer::Train() {
+double BackpropTrainer::Train() {
   double learning_rate = params_.learning_rate_;
   double loss = std::numeric_limits<double>::infinity();
 
@@ -74,6 +74,10 @@ void BackpropTrainer::Train() {
       network_.UpdateWeights(derivatives, learning_rate);
     }
 
+    // Evaluate on validation set.
+    loss = network_.Loss(dataset_.ValidationInputs(),
+                         dataset_.ValidationOutputs());
+
     // Print a message.
     std::printf("Epoch %zu: loss = %f\n", ii, loss);
 
@@ -87,10 +91,8 @@ void BackpropTrainer::Train() {
     // Update learning rate.
     learning_rate *= params_.learning_rate_decay_;
   }
-}
 
-double BackpropTrainer::Test() const {
-  return network_.Loss(dataset_.TestingInputs(), dataset_.TestingOutputs());
+  return loss;
 }
 
 } // namespace mininet

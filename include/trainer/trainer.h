@@ -57,9 +57,13 @@ public:
     : network_(network),
       dataset_(dataset) {}
 
-  // All trainers must implement this interface.
-  virtual void Train() = 0;
-  virtual double Test() const = 0;
+  // Get a const reference to the network.
+  const Network& ImmutableNetwork() const { return network_; }
+
+  // All trainers must implement this interface. Training returns final loss
+  // on the validation set.
+  virtual double Train() = 0;
+
 
 protected:
   Network network_;

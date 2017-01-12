@@ -56,12 +56,12 @@ class Dataset {
 public:
   explicit Dataset(const std::vector<VectorXd>& inputs,
                    const std::vector<VectorXd>& outputs,
-                   double training_fraction = 0.75,
+                   double training_fraction = 0.65,
                    bool normalize = true);
   explicit Dataset(const std::vector<VectorXd>& training_inputs,
                    const std::vector<VectorXd>& training_outputs,
-                   const std::vector<VectorXd>& testing_inputs,
-                   const std::vector<VectorXd>& testing_outputs,
+                   const std::vector<VectorXd>& validation_inputs,
+                   const std::vector<VectorXd>& validation_outputs,
                    bool normalize = true);
   ~Dataset();
 
@@ -70,20 +70,20 @@ public:
   bool Batch(size_t batch_size, std::vector<VectorXd>& input_samples,
              std::vector<VectorXd>& output_samples);
 
-  // Get a const reference to the testing set.
-  const std::vector<VectorXd>& TestingInputs() const;
-  const std::vector<VectorXd>& TestingOutputs() const;
+  // Get a const reference to the validation set.
+  const std::vector<VectorXd>& ValidationInputs() const;
+  const std::vector<VectorXd>& ValidationOutputs() const;
 
 private:
   // Normalize a set of vectors, so that across all vectors each entry is zero
   // mean and variance one.
   void Normalize(std::vector<VectorXd>& data);
 
-  // Training and testing sets.
+  // Training and validation sets.
   std::vector<VectorXd> training_inputs_;
   std::vector<VectorXd> training_outputs_;
-  std::vector<VectorXd> testing_inputs_;
-  std::vector<VectorXd> testing_outputs_;
+  std::vector<VectorXd> validation_inputs_;
+  std::vector<VectorXd> validation_outputs_;
 }; // class Dataset
 
 } // namespace mininet

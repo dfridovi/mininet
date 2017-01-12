@@ -136,10 +136,7 @@ int main(int argc, char** argv) {
   BackpropTrainer trainer(net, dataset, backprop_params);
 
   // Train.
-  trainer.Train();
-
-  // Test.
-  const double final_loss = trainer.Test();
+  const double final_loss = trainer.Train();
   std::printf("Final loss was %f.\n", final_loss);
 
   // Try it on the point (1, 1).

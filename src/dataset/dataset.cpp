@@ -51,20 +51,20 @@ namespace mininet {
 Dataset::~Dataset() {}
 Dataset::Dataset(const std::vector<VectorXd>& training_inputs,
                  const std::vector<VectorXd>& training_outputs,
-                 const std::vector<VectorXd>& testing_inputs,
-                 const std::vector<VectorXd>& testing_outputs,
+                 const std::vector<VectorXd>& validation_inputs,
+                 const std::vector<VectorXd>& validation_outputs,
                  bool normalize)
   : training_inputs_(training_inputs),
     training_outputs_(training_outputs),
-    testing_inputs_(testing_inputs),
-    testing_outputs_(testing_outputs) {
+    validation_inputs_(validation_inputs),
+    validation_outputs_(validation_outputs) {
   CHECK_EQ(training_inputs_.size(), training_outputs_.size());
-  CHECK_EQ(testing_inputs_.size(),  testing_outputs_.size());
-  CHECK(training_inputs_.size() > 0 && testing_inputs_.size() > 0);
+  CHECK_EQ(validation_inputs_.size(),  validation_outputs_.size());
+  CHECK(training_inputs_.size() > 0 && validation_inputs_.size() > 0);
 
   if (normalize) {
     Normalize(training_inputs_);
-    Normalize(testing_inputs_);
+    Normalize(validation_inputs_);
   }
 }
 
@@ -84,7 +84,7 @@ Dataset::Dataset(const std::vector<VectorXd>& inputs,
   std::iota(indices.begin(), indices.end(), 0);
   std::shuffle(indices.begin(), indices.end(), rng);
 
-  // Parcel out the data into training and testing sets.
+  // Parcel out the data into training and validation sets.
   const size_t kNumTrainingSamples =
     static_cast<size_t>(training_fraction * inputs.size());
 
@@ -94,13 +94,13 @@ Dataset::Dataset(const std::vector<VectorXd>& inputs,
   }
 
   for (size_t ii = kNumTrainingSamples; ii < inputs.size(); ii++) {
-    testing_inputs_.push_back(inputs[ indices[ii] ]);
-    testing_outputs_.push_back(outputs[ indices[ii] ]);
+    validation_inputs_.push_back(inputs[ indices[ii] ]);
+    validation_outputs_.push_back(outputs[ indices[ii] ]);
   }
 
   if (normalize) {
     Normalize(training_inputs_);
-    Normalize(testing_inputs_);
+    Normalize(validation_inputs_);
   }
 }
 
@@ -199,13 +199,13 @@ bool Dataset::Batch(size_t batch_size, std::vector<VectorXd>& input_samples,
   return input_samples.size() < batch_size;
 }
 
-// Get a const reference to the testing set.
-const std::vector<VectorXd>& Dataset::TestingInputs() const {
-  return testing_inputs_;
+// Get a const reference to the validation set.
+const std::vector<VectorXd>& Dataset::ValidationInputs() const {
+  return validation_inputs_;
 }
 
-const std::vector<VectorXd>& Dataset::TestingOutputs() const {
-  return testing_outputs_;
+const std::vector<VectorXd>& Dataset::ValidationOutputs() const {
+  return validation_outputs_;
 }
 
 } // namespace mininet
