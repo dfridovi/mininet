@@ -49,14 +49,14 @@
 namespace mininet {
 
 // Factory method.
-OutputLayer::Ptr Softmax::Create(size_t input_size, size_t output_size) {
-  OutputLayer::Ptr ptr(new Softmax(input_size, output_size));
+Layer::Ptr Softmax::Create(size_t input_size, size_t output_size) {
+  Layer::Ptr ptr(new Softmax(input_size, output_size));
   return ptr;
 }
 
 // Private constructor. Use the factory method instead.
 Softmax::Softmax(size_t input_size, size_t output_size)
-  : OutputLayer(input_size, output_size) {}
+  : Layer(input_size, output_size) {}
 
 // Activation and gradient. Implement these in derived classes.
 void Softmax::Forward(const VectorXd& input, VectorXd& output) const {
@@ -83,6 +83,37 @@ void Softmax::Forward(const VectorXd& input, VectorXd& output) const {
   }
 }
 
+void Softmax::Backward(const VectorXd& output, const VectorXd& upstream_gammas,
+                       VectorXd& gammas, VectorXd& deltas) const {
+  // Check that all dimensions line up.
+  CHECK(upstream_gammas.rows() == weights_.rows());
+  CHECK(output.rows() == weights_.rows());
+  CHECK(deltas.rows() == weights_.rows());
+  CHECK(gammas.rows() == weights_.cols() - 1);
+
+  // Compute the 'deltas' from the 'upstream gammas'.
+    for (size_t ii = 0; ii < deltas.rows(); ii++) {
+    deltas(ii) = 0.0;
+
+    for (size_t jj = 0; jj < upstream_gammas.rows(); jj++) {
+      if (ii == jj)
+        deltas(ii) += upstream_gammas(jj) * output(ii) * (1.0 - output(jj));
+      else
+        deltas(ii) -= upstream_gammas(jj) * output(ii) * output(jj);
+    }
+  }
+
+  // Compute the associated 'gammas'.
+  for (size_t jj = 0; jj < gammas.rows(); jj++) {
+    gammas(jj) = 0.0;
+
+    for (size_t ii = 0; ii < deltas.rows(); ii++) {
+      gammas(jj) += deltas(ii) * weights_(ii, jj);
+    }
+  }
+}
+
+// Output backprop.
 double Softmax::Backward(const LossFunctor::ConstPtr& loss,
                          const VectorXd& ground_truth, const VectorXd& output,
                          VectorXd& gammas, VectorXd& deltas) const {

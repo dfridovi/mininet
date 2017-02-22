@@ -66,9 +66,11 @@ struct CrossEntropy : public LossFunctor {
     const double kEpsilon = 1e-4;
 
     // Check that 'ground truth' and 'values' are probability distributions
-    // on equal-sized alphabets.
-    if (ground_truth.rows() != values.rows()) {
-      LOG(WARNING) << "Ground truth and values are not the same length.";
+    // on equal-sized alphabets. Also make sure gradient length matches.
+    if (ground_truth.rows() != values.rows() ||
+        gradient.rows() != values.rows()) {
+      LOG(WARNING) << "Ground truth, values, and gradient are not "
+                   << "the same length.";
       return false;
     }
 

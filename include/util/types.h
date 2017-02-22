@@ -50,7 +50,7 @@ namespace mininet {
 
 // ----------------------- Internal typedefs -------------------- //
 
-enum LayerType {RELU, SOFTMAX};
+enum LayerType {RELU, SIGMOID, SOFTMAX, L2};
 
 // -------------------- Third-party typedefs -------------------- //
 

@@ -51,8 +51,6 @@ namespace mininet {
 
 class HiddenLayer : public Layer {
 public:
-  typedef std::shared_ptr<HiddenLayer> Ptr;
-  typedef std::shared_ptr<const HiddenLayer> ConstPtr;
 
   explicit HiddenLayer(size_t input_size, size_t output_size)
     : Layer(input_size, output_size) {}

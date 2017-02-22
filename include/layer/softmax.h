@@ -44,21 +44,25 @@
 #ifndef MININET_LAYER_SOFTMAX_H
 #define MININET_LAYER_SOFTMAX_H
 
-#include <layer/output_layer.h>
+#include <layer/layer.h>
 #include <util/types.h>
 
 namespace mininet {
 
-class Softmax : public OutputLayer {
+class Softmax : public Layer {
 public:
   // Factory method.
-  static OutputLayer::Ptr Create(size_t input_size, size_t output_size);
+  static Layer::Ptr Create(size_t input_size, size_t output_size);
 
   // Activation and gradient. Implement these in derived classes.
   void Forward(const VectorXd& input, VectorXd& output) const;
-  double Backward(const LossFunctor::ConstPtr& loss, const VectorXd& ground_truth,
-                  const VectorXd& output, VectorXd& gammas,
-                  VectorXd& deltas) const;
+  void Backward(const VectorXd& output, const VectorXd& upstream_gammas,
+                VectorXd& gammas, VectorXd& deltas) const;
+
+  // Output backprop.
+  double Backward(const LossFunctor::ConstPtr& loss,
+                  const VectorXd& ground_truth, const VectorXd& output,
+                  VectorXd& gammas, VectorXd& deltas) const;
 
 private:
   // Private constructor. Use the factory method instead.

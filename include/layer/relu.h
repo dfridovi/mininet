@@ -45,19 +45,28 @@
 #define MININET_LAYER_RELU_H
 
 #include <layer/hidden_layer.h>
+#include <layer/output_layer.h>
 #include <util/types.h>
 
 namespace mininet {
 
-class ReLU : public HiddenLayer {
+class ReLU : public Layer {
 public:
   // Factory method.
-  static HiddenLayer::Ptr Create(size_t input_size, size_t output_size);
+  static Layer::Ptr Create(size_t input_size, size_t output_size);
 
   // Activation and gradient. Implement these in derived classes.
   void Forward(const VectorXd& input, VectorXd& output) const;
   void Backward(const VectorXd& output, const VectorXd& upstream_gammas,
                 VectorXd& gammas, VectorXd& deltas) const;
+
+  // Output layer version of backprop. This function computes the
+  // so-called 'deltas' and 'gammas', i.e. the derivative of loss with respect
+  // to the pre-nonlinearity values and layer inputs, respectively. Note that
+  // 'output' holds the output of the non-linearity.
+  double Backward(const LossFunctor::ConstPtr& loss,
+                  const VectorXd& ground_truth, const VectorXd& output,
+                  VectorXd& gammas, VectorXd& deltas) const;
 
 private:
   // Private constructor. Use the factory method instead.

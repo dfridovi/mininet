@@ -44,6 +44,7 @@
 #ifndef MININET_LAYER_LAYER_H
 #define MININET_LAYER_LAYER_H
 
+#include <loss/loss_functor.h>
 #include <util/types.h>
 
 #include <memory>
@@ -52,6 +53,9 @@ namespace mininet {
 
 class Layer {
 public:
+  typedef std::shared_ptr<Layer> Ptr;
+  typedef std::shared_ptr<const Layer> ConstPtr;
+
   virtual ~Layer();
   explicit Layer(size_t input_size, size_t output_size);
 
@@ -74,6 +78,21 @@ public:
   // have a 'Backward' function to compute a derivative of loss with respect to
   // sum node value ('delta').
   virtual void Forward(const VectorXd& input, VectorXd& output) const = 0;
+
+  // 'Backward' takes in layer output (computed by 'Forward') and the derivative
+  // of loss by that output. It also computes two derivatives of loss:
+  // (1) 'deltas' are with respect to the input to the non-linearity
+  // (2) 'gammas' are with respect to the input to the layer
+  virtual void Backward(const VectorXd& output, const VectorXd& upstream_gammas,
+                        VectorXd& gammas, VectorXd& deltas) const = 0;
+
+  // Output layer version of backprop. This function computes the
+  // so-called 'deltas' and 'gammas', i.e. the derivative of loss with respect
+  // to the pre-nonlinearity values and layer inputs, respectively. Note that
+  // 'output' holds the output of the non-linearity.
+  virtual double Backward(const LossFunctor::ConstPtr& loss,
+                          const VectorXd& ground_truth, const VectorXd& output,
+                          VectorXd& gammas, VectorXd& deltas) const = 0;
 
 protected:
   // Weights from input (with bias) to output.

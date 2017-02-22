@@ -47,6 +47,7 @@
 #include <util/types.h>
 #include <layer/softmax.h>
 #include <layer/relu.h>
+#include <layer/sigmoid.h>
 #include <layer/layer_params.h>
 #include <loss/loss_functor.h>
 

@@ -61,6 +61,9 @@ Network::Network(std::vector<LayerParams> params,
     case RELU :
       layer = ReLU::Create(params[ii].input_size_, params[ii].output_size_);
       break;
+    case SIGMOID :
+      layer = Sigmoid::Create(params[ii].input_size_, params[ii].output_size_);
+      break;
     default:
       LOG(WARNING) << "Invalid hidden layer type. Using ReLU instead.";
       layer = ReLU::Create(params[ii].input_size_, params[ii].output_size_);
@@ -80,6 +83,14 @@ Network::Network(std::vector<LayerParams> params,
   case SOFTMAX :
     output_layer_ = Softmax::Create(params.back().input_size_,
                                     params.back().output_size_);
+    break;
+  case SIGMOID :
+    output_layer_ = Sigmoid::Create(params.back().input_size_,
+                                    params.back().output_size_);
+    break;
+  case RELU :
+    output_layer_ = ReLU::Create(params.back().input_size_,
+                                 params.back().output_size_);
     break;
   default:
     LOG(WARNING) << "Invalid output layer type. Using softmax instead.";
