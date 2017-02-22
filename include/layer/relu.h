@@ -44,8 +44,7 @@
 #ifndef MININET_LAYER_RELU_H
 #define MININET_LAYER_RELU_H
 
-#include <layer/hidden_layer.h>
-#include <layer/output_layer.h>
+#include <layer/layer.h>
 #include <util/types.h>
 
 namespace mininet {

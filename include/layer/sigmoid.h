@@ -37,33 +37,40 @@
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Defines the hidden layer base class.
+// Defines the Sigmoid layer type.
 //
 ///////////////////////////////////////////////////////////////////////////////
 
-#ifndef MININET_LAYER_HIDDEN_LAYER_H
-#define MININET_LAYER_HIDDEN_LAYER_H
+#ifndef MININET_LAYER_SIGMOID_H
+#define MININET_LAYER_SIGMOID_H
 
 #include <layer/layer.h>
 #include <util/types.h>
 
 namespace mininet {
 
-class HiddenLayer : public Layer {
+class Sigmoid : public Layer {
 public:
+  // Factory method.
+  static Layer::Ptr Create(size_t input_size, size_t output_size);
 
-  explicit HiddenLayer(size_t input_size, size_t output_size)
-    : Layer(input_size, output_size) {}
+  // Activation and gradient. Implement these in derived classes.
+  void Forward(const VectorXd& input, VectorXd& output) const;
+  void Backward(const VectorXd& output, const VectorXd& upstream_gammas,
+                VectorXd& gammas, VectorXd& deltas) const;
 
-  // 'Forward' propagation is inherited from Layer.
-  // 'Backward' takes in layer output (computed by 'Forward') and the derivative
-  // of loss by that output. It also computes two derivatives of loss:
-  // (1) 'deltas' are with respect to the input to the non-linearity
-  // (2) 'gammas' are with respect to the input to the layer
-  virtual void Backward(const VectorXd& output, const VectorXd& upstream_gammas,
-                        VectorXd& gammas, VectorXd& deltas) const = 0;
+  // Output layer version of backprop. This function computes the
+  // so-called 'deltas' and 'gammas', i.e. the derivative of loss with respect
+  // to the pre-nonlinearity values and layer inputs, respectively. Note that
+  // 'output' holds the output of the non-linearity.
+  double Backward(const LossFunctor::ConstPtr& loss,
+                  const VectorXd& ground_truth, const VectorXd& output,
+                  VectorXd& gammas, VectorXd& deltas) const;
 
-}; // class HiddenLayer
+private:
+  // Private constructor. Use the factory method instead.
+  explicit Sigmoid(size_t input_size, size_t output_size);
+}; // class Sigmoid
 
 } // namespace mininet
 

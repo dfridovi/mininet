@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017, David Fridovich-Keil.
+ * Copyright (c) 2017. David Fridovich-Keil.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,43 +31,54 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * Please contact the author(s) of this library if you have any questions.
- * Author: David Fridovich-Keil   ( dfk@eecs.berkeley.edu )
- *         Sara Fridovich-Keil    ( saraf@princeton.edu )
+ * Authors: David Fridovich-Keil   ( dfk@eecs.berkeley.edu )
+ *          Sara Fridovich-Keil    ( saraf@princeton.edu )
  */
 
 ///////////////////////////////////////////////////////////////////////////////
 //
-// Defines the output layer base class.
+// Defines the L2 loss functor.
 //
-///////////////////////////////////////////////////////////////////////////////
+// ////////////////////////////////////////////////////////////////////////////
 
-#ifndef MININET_LAYER_OUTPUT_LAYER_H
-#define MININET_LAYER_OUTPUT_LAYER_H
+#ifndef MININET_LOSS_L2_H
+#define MININET_LOSS_L2_H
 
-#include <layer/layer.h>
 #include <loss/loss_functor.h>
-#include <util/types.h>
+
+#include <glog/logging.h>
+#include <iostream>
+#include <math.h>
 
 namespace mininet {
 
-class OutputLayer : public Layer {
-public:
-  typedef std::shared_ptr<OutputLayer> Ptr;
-  typedef std::shared_ptr<const OutputLayer> ConstPtr;
+struct L2 : public LossFunctor {
+  // Factory method.
+  static LossFunctor::Ptr Create() {
+    LossFunctor::Ptr ptr(new L2);
+    return ptr;
+  }
 
-  explicit OutputLayer(size_t input_size, size_t output_size)
-    : Layer(input_size, output_size) {}
+  // All loss functors must evaluate the loss and derivative with respect to
+  // the input 'values' (which are the output of some 'OutputLayer').
+  bool Evaluate(const VectorXd& ground_truth, const VectorXd& values,
+                double& loss, VectorXd& gradient) const {
+    // Check that 'ground truth', 'values', and 'gradient' sizes match.
+    if (ground_truth.rows() != values.rows() ||
+        gradient.rows() != values.rows()) {
+      LOG(WARNING) << "Ground truth, values, and gradient are not "
+                   << "the same length.";
+      return false;
+    }
 
-  // 'Forward' propagation is inherited from Layer. 'Backward' computes the
-  // so-called 'deltas' and 'gammas', i.e. the derivative of loss with respect
-  // to the pre-nonlinearity values and layer inputs, respectively. Note that
-  // 'output' holds the output of the non-linearity.
-  virtual double Backward(const LossFunctor::ConstPtr& loss,
-                          const VectorXd& ground_truth, const VectorXd& output,
-                          VectorXd& gammas, VectorXd& deltas) const = 0;
+    // Compute the loss and gradient.
+    gradient = values - ground_truth;
+    loss = 0.5 * gradient.squaredNorm();
 
-}; // class OutputLayer
+    return true;
+  }
+}; //\struct L2
 
-} // namespace mininet
+}  //\namespace mininet
 
 #endif

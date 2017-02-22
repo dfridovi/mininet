@@ -54,7 +54,7 @@ Network::Network(std::vector<LayerParams> params,
   CHECK_NOTNULL(loss.get());
 
   for (size_t ii = 0; ii < params.size() - 1; ii++) {
-    HiddenLayer::Ptr layer;
+    Layer::Ptr layer;
 
     // Create the new hidden layer.
     switch (params[ii].type_) {
@@ -63,6 +63,9 @@ Network::Network(std::vector<LayerParams> params,
       break;
     case SIGMOID :
       layer = Sigmoid::Create(params[ii].input_size_, params[ii].output_size_);
+      break;
+    case SOFTMAX :
+      layer = Softmax::Create(params[ii].input_size_, params[ii].output_size_);
       break;
     default:
       LOG(WARNING) << "Invalid hidden layer type. Using ReLU instead.";
@@ -113,7 +116,7 @@ void Network::operator()(const VectorXd& input, VectorXd& output) const {
   VectorXd current_output(input.size());
   VectorXd current_input = input;
   for (size_t ii = 0; ii < hidden_layers_.size(); ii++) {
-    HiddenLayer::ConstPtr layer = hidden_layers_[ii];
+    Layer::ConstPtr layer = hidden_layers_[ii];
     current_output.resize(layer->OutputSize());
 
     layer->Forward(current_input, current_output);
@@ -215,7 +218,7 @@ void Network::Forward(const VectorXd& input,
   // Pass through the network.
   layer_inputs.push_back(input);
   for (size_t ii = 0; ii < hidden_layers_.size(); ii++) {
-    HiddenLayer::ConstPtr layer = hidden_layers_[ii];
+    Layer::ConstPtr layer = hidden_layers_[ii];
     VectorXd output(layer->OutputSize());
 
     layer->Forward(layer_inputs[ii], output);
@@ -250,7 +253,7 @@ double Network::Backward(const VectorXd& ground_truth,
 
   // Propagate derivatives backward.
   for (int ii = hidden_layers_.size() - 1; ii >= 0; ii--) {
-    HiddenLayer::ConstPtr layer = hidden_layers_[ii];
+    Layer::ConstPtr layer = hidden_layers_[ii];
     VectorXd next_gamma(layer->InputSize());
     VectorXd next_delta(layer->OutputSize());
 

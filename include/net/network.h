@@ -93,8 +93,8 @@ private:
                   std::vector<VectorXd>& deltas) const;
 
   // Layers.
-  std::vector<HiddenLayer::Ptr> hidden_layers_;
-  OutputLayer::Ptr output_layer_;
+  std::vector<Layer::Ptr> hidden_layers_;
+  Layer::Ptr output_layer_;
 
   // Loss functor.
   const LossFunctor::ConstPtr loss_;
