@@ -64,6 +64,7 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classmininet_1_1_layer-members.html">List of all members</a>  </div>
@@ -77,13 +78,21 @@ Inheritance diagram for mininet::Layer:</div>
  <div class="center">
   <img src="classmininet_1_1_layer.png" usemap="#mininet::Layer_map" alt=""/>
   <map id="mininet::Layer_map" name="mininet::Layer_map">
-<area href="classmininet_1_1_hidden_layer.html" alt="mininet::HiddenLayer" shape="rect" coords="0,56,130,80"/>
-<area href="classmininet_1_1_output_layer.html" alt="mininet::OutputLayer" shape="rect" coords="140,56,270,80"/>
-<area href="classmininet_1_1_re_l_u.html" alt="mininet::ReLU" shape="rect" coords="0,112,130,136"/>
-<area href="classmininet_1_1_softmax.html" alt="mininet::Softmax" shape="rect" coords="140,112,270,136"/>
+<area href="classmininet_1_1_re_l_u.html" alt="mininet::ReLU" shape="rect" coords="0,56,101,80"/>
+<area href="classmininet_1_1_sigmoid.html" alt="mininet::Sigmoid" shape="rect" coords="111,56,212,80"/>
+<area href="classmininet_1_1_softmax.html" alt="mininet::Softmax" shape="rect" coords="222,56,323,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a16a0db407855771f9b7465ff1551f8cb"><td class="memItemLeft" align="right" valign="top"><a id="a16a0db407855771f9b7465ff1551f8cb"></a>
+typedef std::shared_ptr&lt; <a class="el" href="classmininet_1_1_layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Ptr</b></td></tr>
+<tr class="separator:a16a0db407855771f9b7465ff1551f8cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a788af6d5c8e9588770e6717776621201"><td class="memItemLeft" align="right" valign="top"><a id="a788af6d5c8e9588770e6717776621201"></a>
+typedef std::shared_ptr&lt; const <a class="el" href="classmininet_1_1_layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ConstPtr</b></td></tr>
+<tr class="separator:a788af6d5c8e9588770e6717776621201"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aed25482510bfaf3ca2fbea9897ddb352"><td class="memItemLeft" align="right" valign="top"><a id="aed25482510bfaf3ca2fbea9897ddb352"></a>
@@ -98,25 +107,34 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>OutputSize</b> () c
 <tr class="memitem:a294ed3ba99229b383cf0486a5bbc67bb"><td class="memItemLeft" align="right" valign="top"><a id="a294ed3ba99229b383cf0486a5bbc67bb"></a>
 const MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>ImmutableWeights</b> () const</td></tr>
 <tr class="separator:a294ed3ba99229b383cf0486a5bbc67bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad00a16de27c913f9a08860c9f623e3cf"><td class="memItemLeft" align="right" valign="top"><a id="ad00a16de27c913f9a08860c9f623e3cf"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>UpdateWeights</b> (const MatrixXd &amp;derivatives, double step_size)</td></tr>
-<tr class="separator:ad00a16de27c913f9a08860c9f623e3cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b45d5d75030e782f43ff46972d471f8"><td class="memItemLeft" align="right" valign="top"><a id="a2b45d5d75030e782f43ff46972d471f8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>UpdateWeights</b> (const MatrixXd &amp;derivatives, double learning_rate, double momentum=0.0, double decay=0.0)</td></tr>
+<tr class="separator:a2b45d5d75030e782f43ff46972d471f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20738f447572a1fa759decae8913814f"><td class="memItemLeft" align="right" valign="top"><a id="a20738f447572a1fa759decae8913814f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>PerturbWeight</b> (size_t ii, size_t jj, double amount)</td></tr>
 <tr class="separator:a20738f447572a1fa759decae8913814f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a933df55c92eb813d3e69e9ecfa42dfa6"><td class="memItemLeft" align="right" valign="top"><a id="a933df55c92eb813d3e69e9ecfa42dfa6"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Forward</b> (const VectorXd &amp;input, VectorXd &amp;output) const =0</td></tr>
 <tr class="separator:a933df55c92eb813d3e69e9ecfa42dfa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcb8e5bd70a76f479c9448def491576f"><td class="memItemLeft" align="right" valign="top"><a id="adcb8e5bd70a76f479c9448def491576f"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Backward</b> (const VectorXd &amp;output, const VectorXd &amp;upstream_gammas, VectorXd &amp;gammas, VectorXd &amp;deltas) const =0</td></tr>
+<tr class="separator:adcb8e5bd70a76f479c9448def491576f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a979f63fe1e0d4b907b6a7adb7767b75e"><td class="memItemLeft" align="right" valign="top"><a id="a979f63fe1e0d4b907b6a7adb7767b75e"></a>
+virtual double&#160;</td><td class="memItemRight" valign="bottom"><b>Backward</b> (const LossFunctor::ConstPtr &amp;loss, const VectorXd &amp;ground_truth, const VectorXd &amp;output, VectorXd &amp;gammas, VectorXd &amp;deltas) const =0</td></tr>
+<tr class="separator:a979f63fe1e0d4b907b6a7adb7767b75e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a9be2fab58f1a70c74b84c6fed4eac6c9"><td class="memItemLeft" align="right" valign="top"><a id="a9be2fab58f1a70c74b84c6fed4eac6c9"></a>
 MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>weights_</b></td></tr>
 <tr class="separator:a9be2fab58f1a70c74b84c6fed4eac6c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36fb12285a038b6d1afefe9ea29946dc"><td class="memItemLeft" align="right" valign="top"><a id="a36fb12285a038b6d1afefe9ea29946dc"></a>
+MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>weight_changes_</b></td></tr>
+<tr class="separator:a36fb12285a038b6d1afefe9ea29946dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="layer_8h_source.html#l00053">53</a> of file <a class="el" href="layer_8h_source.html">layer.h</a>.</p>
+<p>Definition at line <a class="el" href="layer_8h_source.html#l00054">54</a> of file <a class="el" href="layer_8h_source.html">layer.h</a>.</p>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>/Users/davidfridovichkeil/Documents/Developer/mininet/include/layer/<a class="el" href="layer_8h_source.html">layer.h</a></li>
 <li>/Users/davidfridovichkeil/Documents/Developer/mininet/src/layer/<a class="el" href="layer_8cpp_source.html">layer.cpp</a></li>

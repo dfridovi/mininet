@@ -59,23 +59,21 @@ $(function() {
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><b>mininet</b></li><li class="navelem"><a class="el" href="classmininet_1_1_dataset.html">Dataset</a></li>  </ul>
+<li class="navelem"><b>mininet</b></li><li class="navelem"><a class="el" href="structmininet_1_1_l2.html">L2</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="headertitle">
-<div class="title">mininet::Dataset Member List</div>  </div>
+<div class="title">mininet::L2 Member List</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>This is the complete list of members for <a class="el" href="classmininet_1_1_dataset.html">mininet::Dataset</a>, including all inherited members.</p>
+<p>This is the complete list of members for <a class="el" href="structmininet_1_1_l2.html">mininet::L2</a>, including all inherited members.</p>
 <table class="directory">
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>Batch</b>(size_t batch_size, std::vector&lt; VectorXd &gt; &amp;input_samples, std::vector&lt; VectorXd &gt; &amp;output_samples) (defined in <a class="el" href="classmininet_1_1_dataset.html">mininet::Dataset</a>)</td><td class="entry"><a class="el" href="classmininet_1_1_dataset.html">mininet::Dataset</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>Dataset</b>(const std::vector&lt; VectorXd &gt; &amp;inputs, const std::vector&lt; VectorXd &gt; &amp;outputs, double training_fraction=0.65, bool normalize=true) (defined in <a class="el" href="classmininet_1_1_dataset.html">mininet::Dataset</a>)</td><td class="entry"><a class="el" href="classmininet_1_1_dataset.html">mininet::Dataset</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>Dataset</b>(const std::vector&lt; VectorXd &gt; &amp;training_inputs, const std::vector&lt; VectorXd &gt; &amp;training_outputs, const std::vector&lt; VectorXd &gt; &amp;validation_inputs, const std::vector&lt; VectorXd &gt; &amp;validation_outputs, bool normalize=true) (defined in <a class="el" href="classmininet_1_1_dataset.html">mininet::Dataset</a>)</td><td class="entry"><a class="el" href="classmininet_1_1_dataset.html">mininet::Dataset</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>ValidationInputs</b>() const (defined in <a class="el" href="classmininet_1_1_dataset.html">mininet::Dataset</a>)</td><td class="entry"><a class="el" href="classmininet_1_1_dataset.html">mininet::Dataset</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>ValidationOutputs</b>() const (defined in <a class="el" href="classmininet_1_1_dataset.html">mininet::Dataset</a>)</td><td class="entry"><a class="el" href="classmininet_1_1_dataset.html">mininet::Dataset</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0"><td class="entry"><b>~Dataset</b>() (defined in <a class="el" href="classmininet_1_1_dataset.html">mininet::Dataset</a>)</td><td class="entry"><a class="el" href="classmininet_1_1_dataset.html">mininet::Dataset</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>ConstPtr</b> typedef (defined in <a class="el" href="structmininet_1_1_loss_functor.html">mininet::LossFunctor</a>)</td><td class="entry"><a class="el" href="structmininet_1_1_loss_functor.html">mininet::LossFunctor</a></td><td class="entry"></td></tr>
+  <tr bgcolor="#f0f0f0"><td class="entry"><b>Create</b>() (defined in <a class="el" href="structmininet_1_1_l2.html">mininet::L2</a>)</td><td class="entry"><a class="el" href="structmininet_1_1_l2.html">mininet::L2</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">static</span></td></tr>
+  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>Evaluate</b>(const VectorXd &amp;ground_truth, const VectorXd &amp;values, double &amp;loss, VectorXd &amp;gradient) const (defined in <a class="el" href="structmininet_1_1_l2.html">mininet::L2</a>)</td><td class="entry"><a class="el" href="structmininet_1_1_l2.html">mininet::L2</a></td><td class="entry"><span class="mlabel">inline</span><span class="mlabel">virtual</span></td></tr>
+  <tr bgcolor="#f0f0f0"><td class="entry"><b>Ptr</b> typedef (defined in <a class="el" href="structmininet_1_1_loss_functor.html">mininet::LossFunctor</a>)</td><td class="entry"><a class="el" href="structmininet_1_1_loss_functor.html">mininet::LossFunctor</a></td><td class="entry"></td></tr>
 </table></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>

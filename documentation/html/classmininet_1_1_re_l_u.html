@@ -77,8 +77,7 @@ Inheritance diagram for mininet::ReLU:</div>
  <div class="center">
   <img src="classmininet_1_1_re_l_u.png" usemap="#mininet::ReLU_map" alt=""/>
   <map id="mininet::ReLU_map" name="mininet::ReLU_map">
-<area href="classmininet_1_1_hidden_layer.html" alt="mininet::HiddenLayer" shape="rect" coords="0,56,130,80"/>
-<area href="classmininet_1_1_layer.html" alt="mininet::Layer" shape="rect" coords="0,0,130,24"/>
+<area href="classmininet_1_1_layer.html" alt="mininet::Layer" shape="rect" coords="0,0,90,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -90,10 +89,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>Forward</b> (const Ve
 <tr class="memitem:a01bb8ec3b01d9f8dfb175c62490f109e"><td class="memItemLeft" align="right" valign="top"><a id="a01bb8ec3b01d9f8dfb175c62490f109e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>Backward</b> (const VectorXd &amp;output, const VectorXd &amp;upstream_gammas, VectorXd &amp;gammas, VectorXd &amp;deltas) const</td></tr>
 <tr class="separator:a01bb8ec3b01d9f8dfb175c62490f109e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pub_methods_classmininet_1_1_hidden_layer"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmininet_1_1_hidden_layer')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmininet_1_1_hidden_layer.html">mininet::HiddenLayer</a></td></tr>
-<tr class="memitem:ae7f168cf012746112311407332886b15 inherit pub_methods_classmininet_1_1_hidden_layer"><td class="memItemLeft" align="right" valign="top"><a id="ae7f168cf012746112311407332886b15"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>HiddenLayer</b> (size_t input_size, size_t output_size)</td></tr>
-<tr class="separator:ae7f168cf012746112311407332886b15 inherit pub_methods_classmininet_1_1_hidden_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7ce7471c4a9fea71e2f4e68051f939d"><td class="memItemLeft" align="right" valign="top"><a id="ad7ce7471c4a9fea71e2f4e68051f939d"></a>
+double&#160;</td><td class="memItemRight" valign="bottom"><b>Backward</b> (const LossFunctor::ConstPtr &amp;loss, const VectorXd &amp;ground_truth, const VectorXd &amp;output, VectorXd &amp;gammas, VectorXd &amp;deltas) const</td></tr>
+<tr class="separator:ad7ce7471c4a9fea71e2f4e68051f939d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classmininet_1_1_layer"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classmininet_1_1_layer')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classmininet_1_1_layer.html">mininet::Layer</a></td></tr>
 <tr class="memitem:aed25482510bfaf3ca2fbea9897ddb352 inherit pub_methods_classmininet_1_1_layer"><td class="memItemLeft" align="right" valign="top"><a id="aed25482510bfaf3ca2fbea9897ddb352"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Layer</b> (size_t input_size, size_t output_size)</td></tr>
@@ -107,32 +105,35 @@ size_t&#160;</td><td class="memItemRight" valign="bottom"><b>OutputSize</b> () c
 <tr class="memitem:a294ed3ba99229b383cf0486a5bbc67bb inherit pub_methods_classmininet_1_1_layer"><td class="memItemLeft" align="right" valign="top"><a id="a294ed3ba99229b383cf0486a5bbc67bb"></a>
 const MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>ImmutableWeights</b> () const</td></tr>
 <tr class="separator:a294ed3ba99229b383cf0486a5bbc67bb inherit pub_methods_classmininet_1_1_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad00a16de27c913f9a08860c9f623e3cf inherit pub_methods_classmininet_1_1_layer"><td class="memItemLeft" align="right" valign="top"><a id="ad00a16de27c913f9a08860c9f623e3cf"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>UpdateWeights</b> (const MatrixXd &amp;derivatives, double step_size)</td></tr>
-<tr class="separator:ad00a16de27c913f9a08860c9f623e3cf inherit pub_methods_classmininet_1_1_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b45d5d75030e782f43ff46972d471f8 inherit pub_methods_classmininet_1_1_layer"><td class="memItemLeft" align="right" valign="top"><a id="a2b45d5d75030e782f43ff46972d471f8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>UpdateWeights</b> (const MatrixXd &amp;derivatives, double learning_rate, double momentum=0.0, double decay=0.0)</td></tr>
+<tr class="separator:a2b45d5d75030e782f43ff46972d471f8 inherit pub_methods_classmininet_1_1_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a20738f447572a1fa759decae8913814f inherit pub_methods_classmininet_1_1_layer"><td class="memItemLeft" align="right" valign="top"><a id="a20738f447572a1fa759decae8913814f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>PerturbWeight</b> (size_t ii, size_t jj, double amount)</td></tr>
 <tr class="separator:a20738f447572a1fa759decae8913814f inherit pub_methods_classmininet_1_1_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a97f47ae5a78501c180751747ca8fa0e3"><td class="memItemLeft" align="right" valign="top"><a id="a97f47ae5a78501c180751747ca8fa0e3"></a>
-static HiddenLayer::Ptr&#160;</td><td class="memItemRight" valign="bottom"><b>Create</b> (size_t input_size, size_t output_size)</td></tr>
-<tr class="separator:a97f47ae5a78501c180751747ca8fa0e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d9e8079466ab4a85bb01894877045a6"><td class="memItemLeft" align="right" valign="top"><a id="a1d9e8079466ab4a85bb01894877045a6"></a>
+static Layer::Ptr&#160;</td><td class="memItemRight" valign="bottom"><b>Create</b> (size_t input_size, size_t output_size)</td></tr>
+<tr class="separator:a1d9e8079466ab4a85bb01894877045a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pub_types_classmininet_1_1_hidden_layer"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classmininet_1_1_hidden_layer')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classmininet_1_1_hidden_layer.html">mininet::HiddenLayer</a></td></tr>
-<tr class="memitem:a2be764b9978a6288b26b56f40ee9bfe4 inherit pub_types_classmininet_1_1_hidden_layer"><td class="memItemLeft" align="right" valign="top"><a id="a2be764b9978a6288b26b56f40ee9bfe4"></a>
-typedef std::shared_ptr&lt; <a class="el" href="classmininet_1_1_hidden_layer.html">HiddenLayer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Ptr</b></td></tr>
-<tr class="separator:a2be764b9978a6288b26b56f40ee9bfe4 inherit pub_types_classmininet_1_1_hidden_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0cc783f56aa7d749862dfc4cc60f1bce inherit pub_types_classmininet_1_1_hidden_layer"><td class="memItemLeft" align="right" valign="top"><a id="a0cc783f56aa7d749862dfc4cc60f1bce"></a>
-typedef std::shared_ptr&lt; const <a class="el" href="classmininet_1_1_hidden_layer.html">HiddenLayer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ConstPtr</b></td></tr>
-<tr class="separator:a0cc783f56aa7d749862dfc4cc60f1bce inherit pub_types_classmininet_1_1_hidden_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_types_classmininet_1_1_layer"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classmininet_1_1_layer')"><img src="closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="classmininet_1_1_layer.html">mininet::Layer</a></td></tr>
+<tr class="memitem:a16a0db407855771f9b7465ff1551f8cb inherit pub_types_classmininet_1_1_layer"><td class="memItemLeft" align="right" valign="top"><a id="a16a0db407855771f9b7465ff1551f8cb"></a>
+typedef std::shared_ptr&lt; <a class="el" href="classmininet_1_1_layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>Ptr</b></td></tr>
+<tr class="separator:a16a0db407855771f9b7465ff1551f8cb inherit pub_types_classmininet_1_1_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a788af6d5c8e9588770e6717776621201 inherit pub_types_classmininet_1_1_layer"><td class="memItemLeft" align="right" valign="top"><a id="a788af6d5c8e9588770e6717776621201"></a>
+typedef std::shared_ptr&lt; const <a class="el" href="classmininet_1_1_layer.html">Layer</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>ConstPtr</b></td></tr>
+<tr class="separator:a788af6d5c8e9588770e6717776621201 inherit pub_types_classmininet_1_1_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classmininet_1_1_layer"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classmininet_1_1_layer')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classmininet_1_1_layer.html">mininet::Layer</a></td></tr>
 <tr class="memitem:a9be2fab58f1a70c74b84c6fed4eac6c9 inherit pro_attribs_classmininet_1_1_layer"><td class="memItemLeft" align="right" valign="top"><a id="a9be2fab58f1a70c74b84c6fed4eac6c9"></a>
 MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>weights_</b></td></tr>
 <tr class="separator:a9be2fab58f1a70c74b84c6fed4eac6c9 inherit pro_attribs_classmininet_1_1_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36fb12285a038b6d1afefe9ea29946dc inherit pro_attribs_classmininet_1_1_layer"><td class="memItemLeft" align="right" valign="top"><a id="a36fb12285a038b6d1afefe9ea29946dc"></a>
+MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><b>weight_changes_</b></td></tr>
+<tr class="separator:a36fb12285a038b6d1afefe9ea29946dc inherit pro_attribs_classmininet_1_1_layer"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">

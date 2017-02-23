@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['relu',['ReLU',['../classmininet_1_1_re_l_u.html',1,'mininet']]]
+  ['trainer',['Trainer',['../classmininet_1_1_trainer.html',1,'mininet']]]
 ];

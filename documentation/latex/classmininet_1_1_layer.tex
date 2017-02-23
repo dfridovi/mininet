@@ -3,9 +3,18 @@
 Inheritance diagram for mininet\+:\+:Layer\+:\begin{figure}[H]
 \begin{center}
 \leavevmode
-\includegraphics[height=3.000000cm]{classmininet_1_1_layer}
+\includegraphics[height=2.000000cm]{classmininet_1_1_layer}
 \end{center}
 \end{figure}
+\subsection*{Public Types}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{classmininet_1_1_layer_a16a0db407855771f9b7465ff1551f8cb}{}\label{classmininet_1_1_layer_a16a0db407855771f9b7465ff1551f8cb} 
+typedef std\+::shared\+\_\+ptr$<$ \hyperlink{classmininet_1_1_layer}{Layer} $>$ {\bfseries Ptr}
+\item 
+\hypertarget{classmininet_1_1_layer_a788af6d5c8e9588770e6717776621201}{}\label{classmininet_1_1_layer_a788af6d5c8e9588770e6717776621201} 
+typedef std\+::shared\+\_\+ptr$<$ const \hyperlink{classmininet_1_1_layer}{Layer} $>$ {\bfseries Const\+Ptr}
+\end{DoxyCompactItemize}
 \subsection*{Public Member Functions}
 \begin{DoxyCompactItemize}
 \item 
@@ -21,27 +30,36 @@ size\+\_\+t {\bfseries Output\+Size} () const
 \hypertarget{classmininet_1_1_layer_a294ed3ba99229b383cf0486a5bbc67bb}{}\label{classmininet_1_1_layer_a294ed3ba99229b383cf0486a5bbc67bb} 
 const Matrix\+Xd \& {\bfseries Immutable\+Weights} () const
 \item 
-\hypertarget{classmininet_1_1_layer_ad00a16de27c913f9a08860c9f623e3cf}{}\label{classmininet_1_1_layer_ad00a16de27c913f9a08860c9f623e3cf} 
-void {\bfseries Update\+Weights} (const Matrix\+Xd \&derivatives, double step\+\_\+size)
+\hypertarget{classmininet_1_1_layer_a2b45d5d75030e782f43ff46972d471f8}{}\label{classmininet_1_1_layer_a2b45d5d75030e782f43ff46972d471f8} 
+void {\bfseries Update\+Weights} (const Matrix\+Xd \&derivatives, double learning\+\_\+rate, double momentum=0.\+0, double decay=0.\+0)
 \item 
 \hypertarget{classmininet_1_1_layer_a20738f447572a1fa759decae8913814f}{}\label{classmininet_1_1_layer_a20738f447572a1fa759decae8913814f} 
 void {\bfseries Perturb\+Weight} (size\+\_\+t ii, size\+\_\+t jj, double amount)
 \item 
 \hypertarget{classmininet_1_1_layer_a933df55c92eb813d3e69e9ecfa42dfa6}{}\label{classmininet_1_1_layer_a933df55c92eb813d3e69e9ecfa42dfa6} 
 virtual void {\bfseries Forward} (const Vector\+Xd \&input, Vector\+Xd \&output) const =0
+\item 
+\hypertarget{classmininet_1_1_layer_adcb8e5bd70a76f479c9448def491576f}{}\label{classmininet_1_1_layer_adcb8e5bd70a76f479c9448def491576f} 
+virtual void {\bfseries Backward} (const Vector\+Xd \&output, const Vector\+Xd \&upstream\+\_\+gammas, Vector\+Xd \&gammas, Vector\+Xd \&deltas) const =0
+\item 
+\hypertarget{classmininet_1_1_layer_a979f63fe1e0d4b907b6a7adb7767b75e}{}\label{classmininet_1_1_layer_a979f63fe1e0d4b907b6a7adb7767b75e} 
+virtual double {\bfseries Backward} (const Loss\+Functor\+::\+Const\+Ptr \&loss, const Vector\+Xd \&ground\+\_\+truth, const Vector\+Xd \&output, Vector\+Xd \&gammas, Vector\+Xd \&deltas) const =0
 \end{DoxyCompactItemize}
 \subsection*{Protected Attributes}
 \begin{DoxyCompactItemize}
 \item 
 \hypertarget{classmininet_1_1_layer_a9be2fab58f1a70c74b84c6fed4eac6c9}{}\label{classmininet_1_1_layer_a9be2fab58f1a70c74b84c6fed4eac6c9} 
 Matrix\+Xd {\bfseries weights\+\_\+}
+\item 
+\hypertarget{classmininet_1_1_layer_a36fb12285a038b6d1afefe9ea29946dc}{}\label{classmininet_1_1_layer_a36fb12285a038b6d1afefe9ea29946dc} 
+Matrix\+Xd {\bfseries weight\+\_\+changes\+\_\+}
 \end{DoxyCompactItemize}
 
 
 \subsection{Detailed Description}
 
 
-Definition at line 53 of file layer.\+h.
+Definition at line 54 of file layer.\+h.
 
 
 
