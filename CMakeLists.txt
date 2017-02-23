@@ -58,8 +58,17 @@ if (BUILD_TESTS)
   add_subdirectory(test)
 endif (BUILD_TESTS)
 
+# Installation.
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  install(TARGETS mininet DESTINATION /usr/local/lib)
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+
+if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  install(TARGETS mininet DESTINATION /usr/lib)
+endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+
 # Find and build documentation.
-if (BUILD_DOCUMENTATION)
-  message("Build documentation is enabled.")
-  add_subdirectory(documentation)
-endif (BUILD_DOCUMENTATION)
+#if (BUILD_DOCUMENTATION)
+#  message("Build documentation is enabled.")
+#  add_subdirectory(documentation)
+#endif (BUILD_DOCUMENTATION)
