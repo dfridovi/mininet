@@ -61,10 +61,12 @@ endif (BUILD_TESTS)
 # Installation.
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   install(TARGETS mininet DESTINATION /usr/local/lib)
+  install(DIRECTORY ${CMAKE_SOURCE_DIR}/include DESTINATION /usr/local/include/mininet)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  install(TARGETS mininet DESTINATION /usr/lib)
+  install(TARGETS mininet DESTINATION /usr/local/lib)
+  install(DIRECTORY ${CMAKE_SOURCE_DIR}/include DESTINATION /usr/local/include/mininet)
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 # Find and build documentation.
