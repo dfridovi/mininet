@@ -40,7 +40,8 @@ endif(NOT CMAKE_BUILD_TYPE)
 add_subdirectory(external)
 
 # Add the source directories to the search path so cmake can find our headers.
-include_directories(${CMAKE_SOURCE_DIR}/include/)
+set(CMAKE_INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
+include_directories(${CMAKE_INCLUDE_DIR})
 
 # Collect source files and build the berkeley_sfm object.
 file(GLOB_RECURSE mininet_srcs ${CMAKE_SOURCE_DIR}/src/*.cpp)
@@ -59,15 +60,8 @@ if (BUILD_TESTS)
 endif (BUILD_TESTS)
 
 # Installation.
-if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  install(TARGETS mininet DESTINATION /usr/local/lib)
-  install(DIRECTORY ${CMAKE_SOURCE_DIR}/include DESTINATION /usr/local/include/mininet)
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-
-if (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-  install(TARGETS mininet DESTINATION /usr/local/lib)
-  install(DIRECTORY ${CMAKE_SOURCE_DIR}/include DESTINATION /usr/local/include/mininet)
-endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+install(TARGETS mininet DESTINATION /usr/local/lib)
+install(DIRECTORY ${CMAKE_INCLUDE_DIR}/ DESTINATION /usr/local/include/mininet)
 
 # Find and build documentation.
 #if (BUILD_DOCUMENTATION)
