@@ -44,8 +44,8 @@
 #ifndef MININET_LAYER_LAYER_H
 #define MININET_LAYER_LAYER_H
 
-#include <loss/loss_functor.h>
-#include <util/types.h>
+#include "../loss/loss_functor.h"
+#include "../util/types.h"
 
 #include <memory>
 

@@ -44,7 +44,7 @@
 #ifndef MININET_LOSS_L2_H
 #define MININET_LOSS_L2_H
 
-#include <loss/loss_functor.h>
+#include "../loss/loss_functor.h"
 
 #include <glog/logging.h>
 #include <iostream>

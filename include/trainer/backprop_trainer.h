@@ -44,8 +44,8 @@
 #ifndef MININET_TRAINER_BACKPROP_TRAINER_H
 #define MININET_TRAINER_BACKPROP_TRAINER_H
 
-#include <trainer/trainer.h>
-#include <trainer/backprop_params.h>
+#include "../trainer/trainer.h"
+#include "../trainer/backprop_params.h"
 
 namespace mininet {
 

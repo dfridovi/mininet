@@ -44,7 +44,7 @@
 #ifndef MININET_TRAINER_BACKPROP_PARAMS_H
 #define MININET_TRAINER_BACKPROP_PARAMS_H
 
-#include <util/types.h>
+#include "../util/types.h"
 
 namespace mininet {
 

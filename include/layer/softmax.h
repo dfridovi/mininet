@@ -44,8 +44,8 @@
 #ifndef MININET_LAYER_SOFTMAX_H
 #define MININET_LAYER_SOFTMAX_H
 
-#include <layer/layer.h>
-#include <util/types.h>
+#include "../layer/layer.h"
+#include "../util/types.h"
 
 namespace mininet {
 

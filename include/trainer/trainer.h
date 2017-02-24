@@ -44,9 +44,9 @@
 #ifndef MININET_TRAINER_TRAINER_H
 #define MININET_TRAINER_TRAINER_H
 
-#include <util/types.h>
-#include <net/network.h>
-#include <dataset/dataset.h>
+#include "../util/types.h"
+#include "../net/network.h"
+#include "../dataset/dataset.h"
 
 namespace mininet {
 

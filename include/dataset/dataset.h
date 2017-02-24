@@ -44,7 +44,7 @@
 #ifndef MININET_DATASET_DATASET_H
 #define MININET_DATASET_DATASET_H
 
-#include <util/types.h>
+#include "../util/types.h"
 
 #include <vector>
 #include <random>

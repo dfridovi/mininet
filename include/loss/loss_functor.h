@@ -44,7 +44,7 @@
 #ifndef MININET_LOSS_LOSS_FUNCTOR_H
 #define MININET_LOSS_LOSS_FUNCTOR_H
 
-#include <util/types.h>
+#include "../util/types.h"
 
 #include <memory>
 

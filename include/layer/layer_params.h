@@ -44,7 +44,7 @@
 #ifndef MININET_LAYER_LAYER_PARAMS_H
 #define MININET_LAYER_LAYER_PARAMS_H
 
-#include <util/types.h>
+#include "../util/types.h"
 
 namespace mininet {
 
