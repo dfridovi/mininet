@@ -52,12 +52,16 @@ Network::Network(std::vector<LayerParams> params,
                  const LossFunctor::ConstPtr& loss)
   : loss_(loss) {
   CHECK_NOTNULL(loss.get());
+  CHECK_GE(params.size(), 1);
 
-  for (size_t ii = 0; ii < params.size() - 1; ii++) {
+  for (size_t ii = 0; ii < params.size(); ii++) {
     Layer::Ptr layer;
 
     // Create the new hidden layer.
     switch (params[ii].type_) {
+    case LINEAR :
+      layer = Linear::Create(params[ii].input_size_, params[ii].output_size_);
+      break;
     case RELU :
       layer = ReLU::Create(params[ii].input_size_, params[ii].output_size_);
       break;
@@ -78,53 +82,27 @@ Network::Network(std::vector<LayerParams> params,
       CHECK_EQ(params[ii].input_size_, params[ii - 1].output_size_);
 
     // Add to list.
-    hidden_layers_.push_back(layer);
+    layers_.push_back(layer);
   }
-
-  // Add output layer.
-  switch (params.back().type_) {
-  case SOFTMAX :
-    output_layer_ = Softmax::Create(params.back().input_size_,
-                                    params.back().output_size_);
-    break;
-  case SIGMOID :
-    output_layer_ = Sigmoid::Create(params.back().input_size_,
-                                    params.back().output_size_);
-    break;
-  case RELU :
-    output_layer_ = ReLU::Create(params.back().input_size_,
-                                 params.back().output_size_);
-    break;
-  default:
-    LOG(WARNING) << "Invalid output layer type. Using softmax instead.";
-    output_layer_ = Softmax::Create(params.back().input_size_,
-                                    params.back().output_size_);
-    break;
-  }
-
-  // Make sure its input size matches the previous output size.
-  if (params.size() > 1)
-    CHECK_EQ(params.back().input_size_, params[params.size() - 2].output_size_);
 }
 
 // Treat the network as a functor. Computes the output of the net.
 void Network::operator()(const VectorXd& input, VectorXd& output) const {
-  CHECK_EQ(input.rows(), hidden_layers_.front()->InputSize());
-  CHECK_EQ(output.rows(), output_layer_->OutputSize());
+  CHECK_EQ(input.rows(), layers_.front()->InputSize());
+  CHECK_EQ(output.rows(), layers_.back()->OutputSize());
 
   // Pass through the network.
   VectorXd current_output(input.size());
   VectorXd current_input = input;
-  for (size_t ii = 0; ii < hidden_layers_.size(); ii++) {
-    Layer::ConstPtr layer = hidden_layers_[ii];
+  for (size_t ii = 0; ii < layers_.size(); ii++) {
+    Layer::ConstPtr layer = layers_[ii];
     current_output.resize(layer->OutputSize());
 
     layer->Forward(current_input, current_output);
     current_input = current_output;
   }
 
-  // Pass through output layer.
-  output_layer_->Forward(current_input, output);
+  output = current_output;
 }
 
 // Compute average loss on a set of inputs and ground truths.
@@ -156,13 +134,10 @@ double Network::RunBatch(const std::vector<VectorXd>& inputs,
   double loss_sum = 0.0;
 
   // Set up derivative matrices.
-  for (size_t ii = 0; ii < hidden_layers_.size(); ii++) {
-    derivatives.push_back(MatrixXd::Zero(hidden_layers_[ii]->OutputSize(),
-                                         hidden_layers_[ii]->InputSize() + 1));
+  for (size_t ii = 0; ii < layers_.size(); ii++) {
+    derivatives.push_back(MatrixXd::Zero(layers_[ii]->OutputSize(),
+                                         layers_[ii]->InputSize() + 1));
   }
-
-  derivatives.push_back(MatrixXd::Zero(output_layer_->OutputSize(),
-                                       output_layer_->InputSize() + 1));
 
   // Forward and backward passes for each element of the inputs.
   for (size_t ll = 0; ll < inputs.size(); ll++) {
@@ -172,11 +147,11 @@ double Network::RunBatch(const std::vector<VectorXd>& inputs,
     std::vector<VectorXd> deltas;
     loss_sum += Backward(ground_truths[ll], layer_inputs, deltas);
 
-    CHECK_EQ(layer_inputs.size(), hidden_layers_.size() + 2);
-    CHECK_EQ(deltas.size(), hidden_layers_.size() + 1);
+    CHECK_EQ(layer_inputs.size(), layers_.size() + 1);
+    CHECK_EQ(deltas.size(), layers_.size());
 
     // Compute derivatives with respect to each layer's weights.
-    for (size_t kk = 0; kk < hidden_layers_.size() + 1; kk++) {
+    for (size_t kk = 0; kk < layers_.size(); kk++) {
       for (size_t jj = 0; jj < derivatives[kk].cols() - 1; jj++)
         for (size_t ii = 0; ii < derivatives[kk].rows(); ii++)
           derivatives[kk](ii, jj) += layer_inputs[kk](jj) * deltas[kk](ii);
@@ -184,12 +159,11 @@ double Network::RunBatch(const std::vector<VectorXd>& inputs,
       // Catch bias weights.
       for (size_t ii = 0; ii < derivatives[kk].rows(); ii++)
         derivatives[kk].rightCols(1)(ii) += deltas[kk](ii);
+
+      // Average.
+      derivatives[kk] /= static_cast<double>(inputs.size());
     }
   }
-
-  // Average.
-  for (size_t kk = 0; kk < hidden_layers_.size() + 1; kk++)
-    derivatives[kk] /= static_cast<double>(inputs.size());
 
   return loss_sum /= static_cast<double>(inputs.size());
 }
@@ -198,13 +172,10 @@ double Network::RunBatch(const std::vector<VectorXd>& inputs,
 void Network::UpdateWeights(const std::vector<MatrixXd>& derivatives,
                             double learning_rate, double momentum,
                             double decay) {
-  CHECK_EQ(derivatives.size(), hidden_layers_.size() + 1);
+  CHECK_EQ(derivatives.size(), layers_.size());
 
-  for (size_t ii = 0; ii < hidden_layers_.size(); ii++)
-    hidden_layers_[ii]->UpdateWeights(derivatives[ii], learning_rate,
-                                      momentum, decay);
-
-  output_layer_->UpdateWeights(derivatives.back(), learning_rate,
+  for (size_t ii = 0; ii < layers_.size(); ii++)
+    layers_[ii]->UpdateWeights(derivatives[ii], learning_rate,
                                momentum, decay);
 }
 
@@ -212,22 +183,18 @@ void Network::UpdateWeights(const std::vector<MatrixXd>& derivatives,
 // layer.
 void Network::Forward(const VectorXd& input,
                       std::vector<VectorXd>& layer_inputs) const {
-  CHECK_EQ(input.rows(), hidden_layers_.front()->InputSize());
+  CHECK_EQ(input.rows(), layers_.front()->InputSize());
   layer_inputs.clear();
 
   // Pass through the network.
   layer_inputs.push_back(input);
-  for (size_t ii = 0; ii < hidden_layers_.size(); ii++) {
-    Layer::ConstPtr layer = hidden_layers_[ii];
+  for (size_t ii = 0; ii < layers_.size(); ii++) {
+    Layer::ConstPtr layer = layers_[ii];
     VectorXd output(layer->OutputSize());
 
     layer->Forward(layer_inputs[ii], output);
     layer_inputs.push_back(output);
   }
-
-  VectorXd output(output_layer_->OutputSize());
-  output_layer_->Forward(layer_inputs.back(), output);
-  layer_inputs.push_back(output);
 }
 
 // Backward pass: compute the 'deltas', i.e. the derivatives of loss by each
@@ -235,25 +202,25 @@ void Network::Forward(const VectorXd& input,
 double Network::Backward(const VectorXd& ground_truth,
                          const std::vector<VectorXd>& layer_inputs,
                          std::vector<VectorXd>& deltas) const {
-  CHECK_EQ(ground_truth.rows(), output_layer_->OutputSize());
-  CHECK_EQ(layer_inputs.size(), hidden_layers_.size() + 2);
+  CHECK_EQ(ground_truth.rows(), layers_.back()->OutputSize());
+  CHECK_EQ(layer_inputs.size(), layers_.size() + 1);
   deltas.clear();
 
   // Initialize 'deltas' to be the right size.
-  deltas.resize(hidden_layers_.size() + 1);
+  deltas.resize(layers_.size());
 
   // Start at the output layer.
-  VectorXd gamma(output_layer_->InputSize());
-  VectorXd delta(output_layer_->OutputSize());
+  VectorXd gamma(layers_.back()->InputSize());
+  VectorXd delta(layers_.back()->OutputSize());
 
   const double loss =
-    output_layer_->Backward(loss_, ground_truth,
-                            layer_inputs.back(), gamma, delta);
-  deltas[hidden_layers_.size()] = delta;
+    layers_.back()->Backward(loss_, ground_truth,
+                             layer_inputs.back(), gamma, delta);
+  deltas.back() = delta;
 
   // Propagate derivatives backward.
-  for (int ii = hidden_layers_.size() - 1; ii >= 0; ii--) {
-    Layer::ConstPtr layer = hidden_layers_[ii];
+  for (int ii = layers_.size() - 2; ii >= 0; ii--) {
+    Layer::ConstPtr layer = layers_[ii];
     VectorXd next_gamma(layer->InputSize());
     VectorXd next_delta(layer->OutputSize());
 
@@ -272,12 +239,9 @@ double Network::Backward(const VectorXd& ground_truth,
 // Perturb a specific weight.
 void Network::PerturbWeight(size_t layer_number, size_t ii, size_t jj,
                             double amount) {
-  CHECK_LE(layer_number, hidden_layers_.size());
+  CHECK_LT(layer_number, layers_.size());
 
-  if (layer_number == hidden_layers_.size())
-    output_layer_->PerturbWeight(ii, jj, amount);
-  else
-    hidden_layers_[layer_number]->PerturbWeight(ii, jj, amount);
+  layers_[layer_number]->PerturbWeight(ii, jj, amount);
 }
 
 } // namespace mininet

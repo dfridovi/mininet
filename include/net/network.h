@@ -47,6 +47,7 @@
 #include "../util/types.h"
 #include "../layer/softmax.h"
 #include "../layer/relu.h"
+#include "../layer/linear.h"
 #include "../layer/sigmoid.h"
 #include "../layer/layer_params.h"
 #include "../loss/loss_functor.h"
@@ -93,8 +94,7 @@ private:
                   std::vector<VectorXd>& deltas) const;
 
   // Layers.
-  std::vector<Layer::Ptr> hidden_layers_;
-  Layer::Ptr output_layer_;
+  std::vector<Layer::Ptr> layers_;
 
   // Loss functor.
   const LossFunctor::ConstPtr loss_;
