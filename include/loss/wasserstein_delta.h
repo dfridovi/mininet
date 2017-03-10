@@ -1,0 +1,131 @@
+/*
+ * Copyright (c) 2017. David Fridovich-Keil.
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ *    1. Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *
+ *    2. Redistributions in binary form must reproduce the above
+ *       copyright notice, this list of conditions and the following
+ *       disclaimer in the documentation and/or other materials provided
+ *       with the distribution.
+ *
+ *    3. Neither the name of the copyright holder nor the names of its
+ *       contributors may be used to endorse or promote products derived
+ *       from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS AS IS
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ * Please contact the author(s) of this library if you have any questions.
+ * Authors: David Fridovich-Keil   ( dfk@eecs.berkeley.edu )
+ *          Sara Fridovich-Keil    ( saraf@princeton.edu )
+ */
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// Defines the Wasserstein distance loss functor, with the caveat that
+// the ground truth must be a delta function.
+//
+///////////////////////////////////////////////////////////////////////////////
+
+#ifndef MININET_LOSS_WASSERSTEIN_DELTA_H
+#define MININET_LOSS_WASSERSTEIN_DELTA_H
+
+#include "../loss/loss_functor.h"
+
+#include <glog/logging.h>
+#include <iostream>
+#include <math.h>
+
+namespace mininet {
+
+struct WassersteinDelta : public LossFunctor {
+  // Factory method.
+  static LossFunctor::Ptr Create() {
+    LossFunctor::Ptr ptr(new CrossEntropy);
+    return ptr;
+  }
+
+  // All loss functors must evaluate the loss and derivative with respect to
+  // the input 'values' (which are the output of some 'Layer').
+  bool Evaluate(const VectorXd& ground_truth, const VectorXd& values,
+                double& loss, VectorXd& gradient) const {
+    const double kEpsilon = 1e-4;
+
+    // Check that 'ground truth' and 'values' are probability distributions
+    // on equal-sized alphabets. Also make sure gradient length matches.
+    if (ground_truth.rows() != values.rows() ||
+        gradient.rows() != values.rows()) {
+      LOG(WARNING) << "Ground truth, values, and gradient are not "
+                   << "the same length.";
+      return false;
+    }
+
+    if (ground_truth.sum() < 1.0 - kEpsilon ||
+        ground_truth.sum() > 1.0 + kEpsilon) {
+      LOG(WARNING) << "Ground truth vector does not sum to unity ("
+                   << ground_truth.sum() << ").";
+      return false;
+    }
+
+    if (values.sum() < 1.0 - kEpsilon || values.sum() > 1.0 + kEpsilon) {
+      LOG(WARNING) << "Values vector does not sum to unity (" << values.sum()
+                   << ").";
+      return false;
+    }
+
+    if (ground_truth.minCoeff() < -kEpsilon) {
+      LOG(WARNING) << "Ground truth vector contains a number less than 0.0.";
+      return false;
+    }
+
+    if (ground_truth.maxCoeff() > 1.0 + kEpsilon) {
+      LOG(WARNING) << "Ground truth vector contains a number greater than 1.0.";
+      return false;
+    }
+
+    if (values.minCoeff() < -kEpsilon) {
+      LOG(WARNING) << "Values vector contains a number less than 0.0.";
+      return false;
+    }
+
+    if (values.maxCoeff() > 1.0 + kEpsilon) {
+      LOG(WARNING) << "Values vector contains a number greater than 1.0.";
+      return false;
+    }
+
+    // Check that ground truth is a delta function.
+    int max_index;
+    if (ground_truth.maxCoeff(&max_index) < 1.0 - kEpsilon) {
+      LOG(WARNING) << "Ground truth distribution was not a delta function.";
+      return false;
+    }
+
+    // Compute the loss and gradient.
+    loss = 0.0;
+    for (int ii = 0; ii < ground_truth.rows(); ii++) {
+      loss = values(ii) * static_cast<float>(std::abs(ii - max_index));
+      gradient(ii) = static_cast<float>(std::abs(ii - max_index));
+    }
+
+    return true;
+  }
+}; //\struct WassersteinDelta
+
+}  //\namespace mininet
+
+#endif

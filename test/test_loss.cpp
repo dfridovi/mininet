@@ -42,6 +42,7 @@
 
 #include <loss/loss_functor.h>
 #include <loss/cross_entropy.h>
+#include <loss/wasserstein_delta.h>
 #include <loss/l2.h>
 
 #include <gtest/gtest.h>
@@ -60,6 +61,56 @@ TEST(CrossEntropy, TestGradient) {
   const double kEpsilon = 1e-6;
 
   const LossFunctor::ConstPtr loss = CrossEntropy::Create();
+
+  // Generate a random input/output pair.
+  VectorXd input = VectorXd::Random(kNumLabels);
+  for (size_t ii = 0; ii < kNumLabels; ii++)
+    input(ii) -= input.minCoeff();
+  input /= input.sum();
+
+  VectorXd output = VectorXd::Zero(kNumLabels);
+
+  std::random_device rd;
+  std::default_random_engine rng(rd());
+  std::uniform_int_distribution<size_t> label(0, kNumLabels - 1);
+  output(label(rng)) = 1.0;
+
+  // Compute loss and gradient.
+  double loss_value;
+  VectorXd loss_gradient(kNumLabels);
+  ASSERT_TRUE(loss->Evaluate(output, input, loss_value, loss_gradient));
+
+  // Check against numerical derivatives.
+  for (size_t ii = 0; ii < kNumLabels; ii++) {
+    const double original_input = input(ii);
+
+    double forward_loss, backward_loss;
+    VectorXd dummy_gradient(kNumLabels);
+
+    input(ii) += kPerturbation;
+    ASSERT_TRUE(loss->Evaluate(output, input, forward_loss, dummy_gradient));
+
+    input(ii) -= 2.0 * kPerturbation;
+    ASSERT_TRUE(loss->Evaluate(output, input, backward_loss, dummy_gradient));
+
+    const double numerical_derivative =
+      0.5 * kInversePerturbation * (forward_loss - backward_loss);
+    //input(ii) = original_input;
+    input(ii) += kPerturbation;
+
+    // Make sure they are close.
+    EXPECT_NEAR(numerical_derivative, loss_gradient(ii), kEpsilon);
+  }
+}
+
+// Test that the gradient computation agrees with numerical differentiation.
+TEST(WassersteinDelta, TestGradient) {
+  const size_t kNumLabels = 100;
+  const double kPerturbation = 1e-8;
+  const double kInversePerturbation = 1e8;
+  const double kEpsilon = 1e-6;
+
+  const LossFunctor::ConstPtr loss = WassersteinDelta::Create();
 
   // Generate a random input/output pair.
   VectorXd input = VectorXd::Random(kNumLabels);

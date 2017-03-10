@@ -44,6 +44,8 @@
 #include <layer/relu.h>
 #include <layer/layer_params.h>
 #include <loss/cross_entropy.h>
+#include <loss/wasserstein_delta.h>
+#include <loss/l2.h>
 #include <net/network.h>
 #include <dataset/dataset.h>
 #include <trainer/backprop_trainer.h>
@@ -55,6 +57,10 @@
 #include <random>
 #include <iostream>
 #include <math.h>
+
+// Loss type.
+DEFINE_string(loss_functor, "wasserstein",
+              "Type of loss functor: {wasserstein, cross_entropy, l2}.");
 
 // Network size.
 DEFINE_int32(num_hidden_layers, 1, "Number of hidden layers.");
@@ -95,7 +101,19 @@ int main(int argc, char** argv) {
 
   layer_params.push_back(LayerParams(SOFTMAX, FLAGS_hidden_layer_size, 4));
 
-  const LossFunctor::ConstPtr loss = CrossEntropy::Create();
+  // Choose a loss functor.
+  LossFunctor::ConstPtr loss;
+  if (FLAGS_loss_functor == "wasserstein")
+    loss = WassersteinDelta::Create();
+  else if (FLAGS_loss_functor == "cross_entropy")
+    loss = CrossEntropy::Create();
+  else if (FLAGS_loss_functor == "l2")
+    loss = L2::Create();
+  else {
+    LOG(ERROR) << "Invalid loss_functor argument: " << FLAGS_loss_functor;
+    return 1;
+  }
+
   Network net(layer_params, loss);
 
   // Create a random number generator.
