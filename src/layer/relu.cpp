@@ -54,6 +54,12 @@ Layer::Ptr ReLU::Create(size_t input_size, size_t output_size) {
   return ptr;
 }
 
+// Must implement a deep copy.
+Layer::Ptr ReLU::Copy() const {
+  Layer::Ptr ptr(new ReLU(*this));
+  return ptr;
+}
+
 // Private constructor. Use the factory method instead.
 ReLU::ReLU(size_t input_size, size_t output_size)
   : Layer(input_size, output_size) {}

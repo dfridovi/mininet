@@ -57,7 +57,9 @@ public:
   typedef std::shared_ptr<const Layer> ConstPtr;
 
   virtual ~Layer();
-  explicit Layer(size_t input_size, size_t output_size);
+
+  // Must implement a deep copy.
+  virtual Ptr Copy() const = 0;
 
   // Get input/output sizes and weights.
   size_t InputSize() const { return weights_.cols() - 1; }
@@ -95,6 +97,8 @@ public:
                           VectorXd& gammas, VectorXd& deltas) const = 0;
 
 protected:
+  explicit Layer(size_t input_size, size_t output_size);
+
   // Weights from input (with bias) to output.
   MatrixXd weights_;
 

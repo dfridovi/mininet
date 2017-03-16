@@ -54,6 +54,9 @@ public:
   // Factory method.
   static Layer::Ptr Create(size_t input_size, size_t output_size);
 
+  // Must implement a deep copy.
+  Layer::Ptr Copy() const;
+
   // Activation and gradient. Implement these in derived classes.
   void Forward(const VectorXd& input, VectorXd& output) const;
   void Backward(const VectorXd& output, const VectorXd& upstream_gammas,

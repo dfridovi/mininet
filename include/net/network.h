@@ -60,6 +60,7 @@ class Network {
 public:
   explicit Network(std::vector<LayerParams> params,
                    const LossFunctor::ConstPtr& loss);
+  explicit Network(const Network& net);
   ~Network();
 
   // Treat the network as a functor. Computes the output of the net.

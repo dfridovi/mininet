@@ -54,6 +54,12 @@ Layer::Ptr Sigmoid::Create(size_t input_size, size_t output_size) {
   return ptr;
 }
 
+// Must implement a deep copy.
+Layer::Ptr Sigmoid::Copy() const {
+  Layer::Ptr ptr(new Sigmoid(*this));
+  return ptr;
+}
+
 // Private constructor. Use the factory method instead.
 Sigmoid::Sigmoid(size_t input_size, size_t output_size)
   : Layer(input_size, output_size) {}

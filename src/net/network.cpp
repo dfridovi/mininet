@@ -86,6 +86,17 @@ Network::Network(std::vector<LayerParams> params,
   }
 }
 
+// Copy constructor.
+Network::Network(const Network& net)
+  : loss_(net.loss_) {
+  CHECK_NOTNULL(loss_.get());
+
+  // Copy over layers.
+  for (const auto& layer : net.layers_) {
+    layers_.push_back(layer->Copy());
+  }
+}
+
 // Treat the network as a functor. Computes the output of the net.
 void Network::operator()(const VectorXd& input, VectorXd& output) const {
   CHECK_EQ(input.rows(), layers_.front()->InputSize());

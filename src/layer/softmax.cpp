@@ -54,6 +54,12 @@ Layer::Ptr Softmax::Create(size_t input_size, size_t output_size) {
   return ptr;
 }
 
+// Must implement a deep copy.
+Layer::Ptr Softmax::Copy() const {
+  Layer::Ptr ptr(new Softmax(*this));
+  return ptr;
+}
+
 // Private constructor. Use the factory method instead.
 Softmax::Softmax(size_t input_size, size_t output_size)
   : Layer(input_size, output_size) {}

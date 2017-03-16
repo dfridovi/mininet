@@ -54,6 +54,12 @@ Layer::Ptr Linear::Create(size_t input_size, size_t output_size) {
   return ptr;
 }
 
+// Must implement a deep copy.
+Layer::Ptr Linear::Copy() const {
+  Layer::Ptr ptr(new Linear(*this));
+  return ptr;
+}
+
 // Private constructor. Use the factory method instead.
 Linear::Linear(size_t input_size, size_t output_size)
   : Layer(input_size, output_size) {}
